@@ -125,4 +125,5 @@ hospital management/
 
 ## 📜 License & Compliance
 
-This software is developed strictly for offline, self-hosted operational privacy. No patient health information (PHI) ever leaves the local machine.
+**Proprietary Software**. All rights reserved. 
+This application is strictly proprietary and closed-source. No license is granted for public distribution, replication, or open-source sublicensing. Developed for private, offline, self-hosted operational healthcare and patient safety surveillance.

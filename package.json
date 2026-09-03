@@ -19,7 +19,8 @@
     "telemetry"
   ],
   "author": "pavan256-code",
-  "license": "MIT",
+  "license": "Proprietary",
+  "private": true,
   "devDependencies": {},
   "dependencies": {}
 }

@@ -3,7 +3,7 @@ name = "health-organizer-and-medicine-reminder"
 version = "2.0.0"
 description = "Hospital Management, Clinical Decision Support & Family Medicine Reminder Suite"
 authors = ["pavan256-code <pavan256-code@users.noreply.github.com>"]
-license = "MIT"
+license = "Proprietary"
 readme = "README.md"
 packages = [{include = "apps"}, {include = "config"}]
 
