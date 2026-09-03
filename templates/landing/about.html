@@ -1,0 +1,83 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}?v=5.0">
+{% endblock %}
+
+{% block body_content %}
+<!-- Navigation -->
+<header class="landing-nav">
+  <div class="landing-logo">
+    <div class="sidebar-brand-icon" style="width: 36px; height: 36px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        <path d="M12 5v6l2 2"/>
+      </svg>
+    </div>
+    <span>{{ APP_NAME }}</span>
+  </div>
+  <ul class="landing-nav-links">
+    <li><a href="{% url 'core:landing' %}" class="landing-nav-link">Home</a></li>
+    <li><a href="{% url 'core:features' %}" class="landing-nav-link">Features</a></li>
+    <li><a href="{% url 'core:about' %}" class="landing-nav-link" style="color: var(--primary); font-weight: 700;">About & Privacy</a></li>
+    <li><a href="{% url 'core:contact' %}" class="landing-nav-link">Contact</a></li>
+  </ul>
+  <div>
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary">Dashboard →</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}" class="btn btn-outline">Sign In</a>
+      <a href="{% url 'accounts:register' %}" class="btn btn-primary">Get Started</a>
+    {% endif %}
+  </div>
+</header>
+
+<section class="section-wrap">
+  <div class="section-header">
+    <span class="section-tag">Privacy Philosophy</span>
+    <h1 class="section-title">About {{ APP_NAME }}</h1>
+    <p class="section-desc">Designed with uncompromised local privacy, medical data sovereignty, and zero cloud lock-in.</p>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 2rem; max-width: 900px; margin: 0 auto;">
+    <div class="card card-body">
+      <h3 style="margin-bottom: 0.75rem; color: var(--primary);">🏥 Our Mission</h3>
+      <p>
+        The Medicine Reminder & Health Organizer was architected as a complete personal health command center.
+        Modern healthcare involves managing complex schedules for multiple generations—from aging parents taking
+        cardiac medications, to children requiring antibiotic dosages, to personal wellness and preventive care.
+      </p>
+      <p>
+        We believe your personal medical history, vitals, prescriptions, and symptom records belong exclusively
+        to you and should never be commoditized by cloud surveillance platforms or exposed to data broker breaches.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3 style="margin-bottom: 0.75rem; color: var(--secondary);">🔒 100% Offline & Local Architecture</h3>
+      <p>
+        Unlike contemporary health apps that transmit sensitive medical data to external cloud APIs, this platform
+        operates entirely on your local machine:
+      </p>
+      <ul style="margin-left: 1.5rem; margin-bottom: 1rem; color: var(--text-secondary); line-height: 1.8;">
+        <li><strong>Zero External APIs:</strong> No third-party AI, notification gateways, or tracking scripts.</li>
+        <li><strong>Local SQLite Database:</strong> All tables reside in an ACID-compliant local database.</li>
+        <li><strong>Local Reminder Scheduler:</strong> Dose alarms and notifications compute in local Python runtime.</li>
+        <li><strong>Deterministic Rule Engines:</strong> Safe, rule-based clinical health insights that never hallucinate.</li>
+        <li><strong>Atomic Backup Subsystem:</strong> One-click local backup and disaster recovery archive creation.</li>
+      </ul>
+    </div>
+
+    <div class="card card-body" style="border-left: 4px solid var(--warning);">
+      <h3 style="margin-bottom: 0.75rem; color: #b45309;">⚠️ Medical Information Disclaimer</h3>
+      <p>
+        This software is an administrative health organizer and personal logging utility. It is not a medical device,
+        does not offer medical diagnosis, and does not replace the professional judgment of qualified healthcare providers.
+        Always consult your physician, pharmacist, or specialist regarding changes to medications, dosage regimens,
+        or symptoms.
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

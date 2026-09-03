@@ -1,0 +1,68 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Log Workout - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Log Physical Exercise</h1>
+    <span class="dashboard-date-badge">Enter workout type, duration, distance, and calories burned</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'wellness:fitness_list' %}" class="btn btn-outline btn-sm">← Back to Fitness</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.family_member.id_for_label }}">Patient *</label>
+        {{ form.family_member }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.date.id_for_label }}">Date *</label>
+        {{ form.date }}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.activity_type.id_for_label }}">Exercise Type *</label>
+        {{ form.activity_type }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.duration_minutes.id_for_label }}">Duration (Minutes) *</label>
+        {{ form.duration_minutes }}
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.distance_km.id_for_label }}">Distance (km)</label>
+        {{ form.distance_km }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.steps_count.id_for_label }}">Step Count</label>
+        {{ form.steps_count }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.calories_burned.id_for_label }}">Calories (kcal)</label>
+        {{ form.calories_burned }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Workout Notes / Intensity</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'wellness:fitness_list' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Workout</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

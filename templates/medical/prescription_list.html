@@ -1,0 +1,59 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Prescriptions - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Prescription Records</h1>
+    <span class="dashboard-date-badge">Medical prescriptions, physician assessments, and attached files</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:prescription_add' %}" class="btn btn-primary">➕ Add Prescription</a>
+    <a href="{% url 'medications:medicine_list' %}" class="btn btn-outline btn-sm">Medicine Catalog</a>
+  </div>
+</div>
+
+<div class="grid-3" style="gap: 1.5rem;">
+  {% for p in prescriptions %}
+  <div class="card" style="display: flex; flex-direction: column;">
+    <div class="card-header">
+      <span class="badge badge-primary">{{ p.prescription_date|date:"M d, Y" }}</span>
+      <span class="badge badge-muted">{{ p.family_member.full_name }}</span>
+    </div>
+    <div class="card-body" style="flex: 1;">
+      <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">
+        <a href="{% url 'medical:prescription_detail' p.id %}">{{ p.title }}</a>
+      </h3>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        Doctor: {{ p.doctor.full_name|default:"Not specified" }}
+      </div>
+      {% if p.diagnosis %}
+        <div style="background-color: var(--bg-main); padding: 0.65rem; border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 0.75rem;">
+          <strong>Diagnosis:</strong> {{ p.diagnosis|truncatechars:70 }}
+        </div>
+      {% endif %}
+      {% if p.document_file %}
+        <div style="font-size: 0.78rem; color: var(--primary);">
+          📎 Document attached
+        </div>
+      {% endif %}
+    </div>
+    <div class="card-footer" style="display: flex; justify-content: space-between;">
+      <a href="{% url 'medical:prescription_detail' p.id %}" class="btn btn-outline btn-sm">View Details</a>
+      <div style="display: flex; gap: 0.35rem;">
+        <a href="{% url 'medical:prescription_edit' p.id %}" class="btn btn-outline btn-sm">Edit</a>
+        <a href="{% url 'medical:prescription_delete' p.id %}" class="btn btn-outline btn-sm" style="color: var(--danger);">✕</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="card card-body" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
+    <div style="font-size: 3rem; margin-bottom: 0.5rem;">📋</div>
+    <h2>No prescriptions recorded</h2>
+    <p>Upload or enter doctor prescriptions to keep clinical documentation organized.</p>
+    <a href="{% url 'medical:prescription_add' %}" class="btn btn-primary" style="margin-top: 1rem;">+ Add Prescription</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

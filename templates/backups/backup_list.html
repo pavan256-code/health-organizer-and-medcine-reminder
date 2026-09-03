@@ -1,0 +1,61 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Local Database Backups - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Database Backups & Snapshots</h1>
+    <span class="dashboard-date-badge">Perform point-in-time local SQLite backups and download safe snapshots</span>
+  </div>
+  <div class="quick-actions-bar">
+    <form action="{% url 'backups:backup_create' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">💾 Create New Snapshot</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Snapshot Filename</th>
+          <th>Created Timestamp</th>
+          <th>File Size</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in backups %}
+        <tr>
+          <td><code>{{ b.filename }}</code></td>
+          <td>{{ b.created_at|date:"Y-m-d H:i:s" }}</td>
+          <td>{{ b.size_mb }} MB</td>
+          <td>
+            <div style="display: flex; gap: 0.5rem;">
+              <a href="{% url 'backups:backup_download' b.filename %}" class="btn btn-primary btn-sm">
+                ⬇️ Download
+              </a>
+              <form action="{% url 'backups:backup_delete' b.filename %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline btn-sm" style="color: var(--danger);" onclick="return confirm('Delete this local backup snapshot?')">
+                  ✕ Delete
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            No backups created yet. Click "Create New Snapshot" to take an immediate local backup.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

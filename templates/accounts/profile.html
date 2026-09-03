@@ -1,0 +1,176 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}My Profile - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Personal Profile & Preferences</h1>
+    <span class="dashboard-date-badge">Manage your clinical demographics and emergency details</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'accounts:change_password' %}" class="btn btn-outline btn-sm">🔑 Change Password</a>
+    <a href="{% url 'accounts:login_history' %}" class="btn btn-outline btn-sm">🛡️ Login History</a>
+    <a href="{% url 'accounts:sessions' %}" class="btn btn-outline btn-sm">💻 Active Sessions</a>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="grid-2" style="gap: 1.5rem; align-items: start;">
+    <!-- Column 1: Personal & Demographics -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div class="card">
+        <div class="card-header">
+          <span>👤 Basic Demographics</span>
+        </div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              {{ form.first_name }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              {{ form.last_name }}
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              {{ form.phone_number }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              {{ form.date_of_birth }}
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              {{ form.gender }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Blood Group</label>
+              {{ form.blood_group }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Profile Avatar</label>
+            {{ form.avatar }}
+            {% if form.instance.avatar %}
+              <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+                Current file: {{ form.instance.avatar.name }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>📍 Residential Address</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Street Address</label>
+            {{ form.address }}
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">City</label>
+              {{ form.city }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">State / Province</label>
+              {{ form.state }}
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Postal / ZIP Code</label>
+              {{ form.postal_code }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Country</label>
+              {{ form.country }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 2: Emergency Contact & Preferences -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div class="card" style="border-left: 4px solid var(--danger);">
+        <div class="card-header">
+          <span>🚨 Emergency Medical Contact</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Contact Name</label>
+            {{ form.emergency_contact_name }}
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Contact Phone</label>
+              {{ form.emergency_contact_phone }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Relationship</label>
+              {{ form.emergency_contact_relation }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>⚙️ Security & Display Preferences</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Session Inactivity Timeout (Minutes)</label>
+            {{ form.session_timeout_minutes }}
+            <div class="form-help">Automatically logs you out after this duration of inactivity.</div>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label class="form-label">Theme</label>
+              {{ form.preferred_theme }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time Format</label>
+              {{ form.time_format }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date Format</label>
+              {{ form.date_format }}
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 0.5rem;">
+            <div class="form-check">
+              {{ form.enable_sound_notifications }}
+              <label class="form-label" for="{{ form.enable_sound_notifications.id_for_label }}" style="margin-bottom: 0; cursor: pointer;">
+                Play audio chime on dose reminder alerts
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          💾 Save Profile & Preferences
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

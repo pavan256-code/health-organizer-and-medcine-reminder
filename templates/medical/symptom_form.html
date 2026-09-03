@@ -1,0 +1,68 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Log Symptom - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Log Symptom Occurrence</h1>
+    <span class="dashboard-date-badge">Record onset, severity rating, and potential environmental triggers</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:symptom_list' %}" class="btn btn-outline btn-sm">← Back to Symptoms</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.family_member.id_for_label }}">Patient *</label>
+        {{ form.family_member }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.symptom_name.id_for_label }}">Symptom Name *</label>
+        {{ form.symptom_name }}
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.severity.id_for_label }}">Severity Level *</label>
+        {{ form.severity }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.date.id_for_label }}">Onset Date *</label>
+        {{ form.date }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.time.id_for_label }}">Onset Time *</label>
+        {{ form.time }}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.duration_hours.id_for_label }}">Duration (Hours)</label>
+        {{ form.duration_hours }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.triggers.id_for_label }}">Suspected Triggers</label>
+        {{ form.triggers }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.description.id_for_label }}">Detailed Description & Sensation</label>
+      {{ form.description }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'medical:symptom_list' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Symptom Log</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

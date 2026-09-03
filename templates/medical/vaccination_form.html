@@ -1,0 +1,68 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Record Vaccination - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Log Immunization Record</h1>
+    <span class="dashboard-date-badge">Record vaccine name, dose number, and next scheduled booster</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:vaccination_list' %}" class="btn btn-outline btn-sm">← Back to Vaccinations</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.family_member.id_for_label }}">Patient *</label>
+        {{ form.family_member }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.vaccine_name.id_for_label }}">Vaccine Name *</label>
+        {{ form.vaccine_name }}
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.dose_number.id_for_label }}">Dose Sequence</label>
+        {{ form.dose_number }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.vaccination_date.id_for_label }}">Date Given *</label>
+        {{ form.vaccination_date }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.next_due_date.id_for_label }}">Next Due Date</label>
+        {{ form.next_due_date }}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.provider.id_for_label }}">Administering Clinic / Provider</label>
+        {{ form.provider }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.status.id_for_label }}">Status</label>
+        {{ form.status }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Batch / Adverse Reactions / Notes</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'medical:vaccination_list' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Vaccination</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

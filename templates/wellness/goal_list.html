@@ -1,0 +1,60 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Health Goals - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Personal Health & Wellness Goals</h1>
+    <span class="dashboard-date-badge">Weight targets, step counts, hydration, and adherence milestones</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'wellness:goal_add' %}" class="btn btn-primary">➕ Set New Goal</a>
+  </div>
+</div>
+
+<div class="grid-3" style="gap: 1.5rem;">
+  {% for g in goals %}
+  <div class="card" style="display: flex; flex-direction: column;">
+    <div class="card-header">
+      <span class="badge badge-primary">{{ g.get_goal_type_display }}</span>
+      <span class="badge {% if g.status == 'COMPLETED' %}badge-success{% elif g.status == 'ACTIVE' %}badge-info{% else %}badge-muted{% endif %}">
+        {{ g.get_status_display }}
+      </span>
+    </div>
+    <div class="card-body" style="flex: 1;">
+      <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">{{ g.title }}</h3>
+      <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Patient: {{ g.family_member.full_name }}
+      </div>
+
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+        <span>Progress:</span>
+        <strong>{{ g.current_value }} / {{ g.target_value }} {{ g.unit }}</strong>
+      </div>
+
+      <div class="progress" style="margin-bottom: 1rem;">
+        <div class="progress-bar {% if g.progress_percentage >= 100 %}success{% else %}primary{% endif %}" style="width: {{ g.progress_percentage }}%;"></div>
+      </div>
+
+      <form action="{% url 'wellness:goal_update_progress' g.id %}" method="post" style="display: flex; gap: 0.5rem;">
+        {% csrf_token %}
+        <input type="number" step="0.1" name="current_value" value="{{ g.current_value }}" class="form-control" style="font-size: 0.85rem;" placeholder="Update current value">
+        <button type="submit" class="btn btn-outline btn-sm">Update</button>
+      </form>
+    </div>
+    <div class="card-footer" style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+      <span>Target: {{ g.target_date|date:"M d, Y"|default:"Open-ended" }}</span>
+      <a href="{% url 'wellness:goal_delete' g.id %}" style="color: var(--danger);">Delete</a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="card card-body" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
+    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎯</div>
+    <h2>No goals set yet</h2>
+    <p>Define target metrics to keep your family motivated and healthy.</p>
+    <a href="{% url 'wellness:goal_add' %}" class="btn btn-primary" style="margin-top: 1rem;">+ Set First Goal</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}System Audit Logs - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>System Audit Trail</h1>
+    <span class="dashboard-date-badge">Immutable audit logging of clinical record changes and security events</span>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
+  <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <div>
+      <input type="text" name="q" class="form-control" placeholder="Search description, IP, or record..." value="{{ search_query }}">
+    </div>
+    <div>
+      <select name="module" class="form-select">
+        <option value="">All Modules</option>
+        {% for mod_val, mod_label in module_choices %}
+          <option value="{{ mod_val }}" {% if mod_val == selected_module %}selected{% endif %}>{{ mod_label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <select name="action" class="form-select">
+        <option value="">All Actions</option>
+        {% for act_val, act_label in action_choices %}
+          <option value="{{ act_val }}" {% if act_val == selected_action %}selected{% endif %}>{{ act_label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Filter Logs</button>
+    <a href="{% url 'audit:log_list' %}" class="btn btn-outline btn-sm">Reset</a>
+  </form>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>User</th>
+          <th>Action</th>
+          <th>Module</th>
+          <th>Target Object</th>
+          <th>Description</th>
+          <th>IP Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td style="white-space: nowrap; font-weight: 600;">
+            {{ log.timestamp|date:"Y-m-d H:i:s" }}
+          </td>
+          <td>{{ log.user.username|default:"System" }}</td>
+          <td>
+            <span class="badge {% if log.action == 'DELETE' %}badge-danger{% elif log.action == 'CREATE' %}badge-success{% elif log.action == 'UPDATE' %}badge-warning{% else %}badge-info{% endif %}">
+              {{ log.get_action_display }}
+            </span>
+          </td>
+          <td><span class="badge badge-muted">{{ log.get_module_display }}</span></td>
+          <td style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ log.object_repr }}">
+            {{ log.object_repr|default:"-" }}
+          </td>
+          <td style="font-size: 0.8rem; color: var(--text-secondary);">
+            {{ log.description }}
+          </td>
+          <td><code>{{ log.ip_address|default:"127.0.0.1" }}</code></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+            No audit records found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

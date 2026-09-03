@@ -1,0 +1,18 @@
+{% if messages %}
+<div class="messages-container" style="margin-bottom: 1.25rem;">
+  {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+      <div style="display: flex; align-items: center; gap: 0.65rem;">
+        <span>
+          {% if message.tags == 'error' %}⚠️
+          {% elif message.tags == 'warning' %}🔔
+          {% elif message.tags == 'success' %}✅
+          {% else %}ℹ️{% endif %}
+        </span>
+        <span>{{ message }}</span>
+      </div>
+      <button type="button" class="alert-close" aria-label="Close">✕</button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}

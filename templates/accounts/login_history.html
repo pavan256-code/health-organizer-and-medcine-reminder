@@ -1,0 +1,63 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Login History - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Authentication & Login History</h1>
+    <span class="dashboard-date-badge">Security audit trail of all authentication events</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'accounts:sessions' %}" class="btn btn-outline btn-sm">Active Sessions</a>
+    <a href="{% url 'accounts:profile' %}" class="btn btn-outline btn-sm">Profile Details</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Attempted Username</th>
+          <th>Status</th>
+          <th>IP Address</th>
+          <th>Browser / User Agent</th>
+          <th>Notes / Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rec in login_records %}
+        <tr>
+          <td style="font-weight: 600; white-space: nowrap;">
+            {{ rec.timestamp|date:"Y-m-d H:i:s" }}
+          </td>
+          <td>{{ rec.username_attempted }}</td>
+          <td>
+            {% if rec.status == 'SUCCESS' %}
+              <span class="badge badge-success">✓ SUCCESS</span>
+            {% else %}
+              <span class="badge badge-danger">✕ FAILED</span>
+            {% endif %}
+          </td>
+          <td><code>{{ rec.ip_address|default:"127.0.0.1" }}</code></td>
+          <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.78rem;" title="{{ rec.user_agent }}">
+            {{ rec.user_agent|truncatechars:45 }}
+          </td>
+          <td style="color: var(--text-muted); font-size: 0.8rem;">
+            {{ rec.failure_reason|default:"Authenticated successfully" }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            No login history records found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

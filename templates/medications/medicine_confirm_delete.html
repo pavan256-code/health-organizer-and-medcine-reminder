@@ -1,0 +1,22 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Discontinue Medication - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 3rem auto; padding: 2.25rem; text-align: center;">
+  <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+  <h2>Discontinue Medication?</h2>
+  <p style="margin: 1rem 0 1.5rem; color: var(--text-secondary);">
+    Are you sure you want to mark <strong>{{ object.name }}</strong> as discontinued for {{ object.family_member.full_name }}?
+    All historical administration records and adherence calculations will remain preserved.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+      <a href="{% url 'medications:medicine_detail' object.id %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-danger">Confirm Discontinuation</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

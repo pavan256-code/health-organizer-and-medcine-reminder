@@ -1,0 +1,69 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Health Intelligence & Analytics - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Clinical Insights & Health Intelligence</h1>
+    <span class="dashboard-date-badge">Deterministic rule-based clinical analysis generated locally</span>
+  </div>
+</div>
+
+<!-- Health Score Card -->
+<div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); border-color: rgba(2, 132, 199, 0.2);">
+  <div class="card-body" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;">
+    <div>
+      <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+        Dynamic Health Score
+      </div>
+      <h2 style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 0.25rem 0;">
+        {{ health_score }} <span style="font-size: 1.25rem; font-weight: 400; color: var(--text-muted);">/ 100</span>
+      </h2>
+      <p style="color: var(--text-secondary); max-width: 500px; font-size: 0.9rem;">
+        Composite score weighted across 14-day medication adherence (40%), vital signs stability (30%), and active wellness goal progress (30%).
+      </p>
+    </div>
+
+    <div style="min-width: 250px;">
+      <div class="progress" style="height: 14px; margin-bottom: 0.5rem;">
+        <div class="progress-bar {% if health_score >= 80 %}success{% elif health_score >= 60 %}primary{% elif health_score >= 40 %}warning{% else %}danger{% endif %}" style="width: {{ health_score }}%;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted);">
+        <span>Critical (0)</span>
+        <span>Fair (50)</span>
+        <span>Optimal (100)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dynamic Rule Alerts & Insights -->
+<h3 style="margin-bottom: 1rem; font-size: 1.2rem;">Deterministic Clinical Heuristics</h3>
+<div style="display: flex; flex-direction: column; gap: 1rem;">
+  {% for item in insights %}
+    <div class="card" style="border-left: 4px solid {% if item.severity == 'URGENT' %}var(--danger){% elif item.severity == 'HIGH' %}var(--warning){% else %}var(--primary){% endif %}; padding: 1.25rem;">
+      <div style="display: flex; gap: 1rem; align-items: flex-start;">
+        <div style="font-size: 2rem;">{{ item.icon }}</div>
+        <div style="flex: 1;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <strong style="font-size: 1.05rem;">{{ item.title }}</strong>
+            <span class="badge {% if item.severity == 'URGENT' %}badge-danger{% elif item.severity == 'HIGH' %}badge-warning{% else %}badge-info{% endif %}">
+              {{ item.severity }}
+            </span>
+          </div>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0;">
+            {{ item.description }}
+          </p>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card card-body" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem;">✅</div>
+      <h2>All Clinical Signals Normal</h2>
+      <p>No medication compliance deficits, hypertensive vital spikes, or inventory shortages detected.</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

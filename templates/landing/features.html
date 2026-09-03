@@ -1,0 +1,114 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}?v=5.0">
+{% endblock %}
+
+{% block body_content %}
+<!-- Navigation -->
+<header class="landing-nav">
+  <div class="landing-logo">
+    <div class="sidebar-brand-icon" style="width: 36px; height: 36px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        <path d="M12 5v6l2 2"/>
+      </svg>
+    </div>
+    <span>{{ APP_NAME }}</span>
+  </div>
+  <ul class="landing-nav-links">
+    <li><a href="{% url 'core:landing' %}" class="landing-nav-link">Home</a></li>
+    <li><a href="{% url 'core:features' %}" class="landing-nav-link" style="color: var(--primary); font-weight: 700;">Features</a></li>
+    <li><a href="{% url 'core:about' %}" class="landing-nav-link">About & Privacy</a></li>
+    <li><a href="{% url 'core:contact' %}" class="landing-nav-link">Contact</a></li>
+  </ul>
+  <div>
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary">Dashboard →</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}" class="btn btn-outline">Sign In</a>
+      <a href="{% url 'accounts:register' %}" class="btn btn-primary">Get Started</a>
+    {% endif %}
+  </div>
+</header>
+
+<section class="section-wrap">
+  <div class="section-header">
+    <span class="section-tag">Deep Specifications</span>
+    <h1 class="section-title">Complete Architectural Modules</h1>
+    <p class="section-desc">Explore each fully-featured domain included within the platform.</p>
+  </div>
+
+  <div class="grid-2" style="gap: 2rem;">
+    <div class="card card-body">
+      <h3>💊 Module 1: Medication Management</h3>
+      <p style="margin-top: 0.5rem;">
+        Full cataloging of prescription and OTC medications with generic name, strength, unit,
+        formulation (tablet, capsule, syrup, inhaler), before/after food guidance, dosage frequency,
+        inventory depletion velocity, minimum stock warnings, and batch expiry surveillance.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3>⏰ Module 2: Reminder & Adherence Engine</h3>
+      <p style="margin-top: 0.5rem;">
+        Deterministic local scheduler creating daily and weekly dose schedules. Record doses as
+        Taken, Skipped, Delayed, or Snoozed. Calculates compliance percentages across medicines and
+        family profiles with audio and in-app alerts.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3>🩺 Module 3: Clinical & Medical Records</h3>
+      <p style="margin-top: 0.5rem;">
+        Doctor specialist directory, clinic visits with reschedule/cancellation tracking, multi-item
+        prescriptions, symptom journals with severity indices, vaccination history with upcoming due dates,
+        allergy records, and protected local document storage.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3>❤️ Module 4: Vitals & Health Metrics</h3>
+      <p style="margin-top: 0.5rem;">
+        Record blood pressure (systolic/diastolic), fasting and postprandial glucose, resting heart rate,
+        body weight, height, automatic BMI computation, body temperature, and oxygen saturation (SpO2)
+        with interactive trend visualization.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3>🥗 Module 5: Lifestyle, Diet & Sleep</h3>
+      <p style="margin-top: 0.5rem;">
+        Log meals by type (breakfast, lunch, dinner, snack), track water hydration in milliliters,
+        record physical exercise duration and distance, and calculate nightly sleep duration and sleep quality.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3>💡 Module 6: Rule-Based Health Insights</h3>
+      <p style="margin-top: 0.5rem;">
+        A local, rule-based diagnostic guidance engine that correlates compliance drops, consecutive
+        elevated blood pressure readings, low sleep averages, and critical drug-drug interaction warnings
+        with safe informational context.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3>📄 Module 7: Reporting & Export Engine</h3>
+      <p style="margin-top: 0.5rem;">
+        Generates clinical multi-page PDF reports (via local ReportLab) complete with patient demographics,
+        medication tables, adherence rates, and vital logs for doctor reviews, alongside raw CSV export files.
+      </p>
+    </div>
+
+    <div class="card card-body">
+      <h3>💾 Module 8: Audit & Disaster Recovery</h3>
+      <p style="margin-top: 0.5rem;">
+        Comprehensive request-level audit logging tracking every record creation, update, and deletion,
+        paired with an atomic SQLite database backup and media ZIP archive generator.
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

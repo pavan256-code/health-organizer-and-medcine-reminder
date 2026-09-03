@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+
+{% block title %}500 - System Error - {{ APP_NAME }}{% endblock %}
+
+{% block body_content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; background-color: var(--bg-main);">
+  <div class="card card-body" style="max-width: 500px; padding: 3rem; border-top: 4px solid var(--danger);">
+    <div style="font-size: 3.5rem; margin-bottom: 1rem;">⚠️</div>
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">500 - System Exception</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+      An unexpected internal exception occurred. The incident has been recorded in the local audit log.
+    </p>
+    <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary">
+      Return to Health Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

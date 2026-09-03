@@ -1,0 +1,3 @@
+"""
+Medical management app package.
+"""

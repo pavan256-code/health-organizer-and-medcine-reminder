@@ -1,0 +1,83 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Vitals & Physiological Metrics - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Clinical Vitals & Metrics</h1>
+    <span class="dashboard-date-badge">Blood pressure, glucose, resting heart rate, SpO2, and weight tracking</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:vital_add' %}" class="btn btn-primary">➕ Record Measurement</a>
+    <a href="{% url 'medical:vital_trends' %}" class="btn btn-outline btn-sm">📈 Interactive Trends</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Patient</th>
+          <th>Blood Pressure</th>
+          <th>Heart Rate</th>
+          <th>Blood Sugar</th>
+          <th>Weight / BMI</th>
+          <th>SpO2</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vitals %}
+        <tr>
+          <td style="font-weight: 600; white-space: nowrap;">
+            {{ v.date|date:"Y-m-d" }} @ {{ v.time|time:"H:i" }}
+          </td>
+          <td>{{ v.family_member.full_name }}</td>
+          <td>
+            {% if v.blood_pressure_systolic and v.blood_pressure_diastolic %}
+              <strong>{{ v.blood_pressure_systolic }}/{{ v.blood_pressure_diastolic }}</strong>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">{{ v.bp_category }}</div>
+            {% else %}
+              <span style="color: var(--text-muted);">-</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if v.heart_rate %}
+              {{ v.heart_rate }} <span style="font-size: 0.75rem; color: var(--text-muted);">BPM</span>
+            {% else %}-{% endif %}
+          </td>
+          <td>
+            {% if v.blood_sugar_fasting %}
+              {{ v.blood_sugar_fasting }} <span style="font-size: 0.75rem; color: var(--text-muted);">mg/dL</span>
+            {% elif v.blood_sugar_postprandial %}
+              {{ v.blood_sugar_postprandial }} (PP)
+            {% else %}-{% endif %}
+          </td>
+          <td>
+            {% if v.weight_kg %}
+              {{ v.weight_kg }} kg
+              {% if v.bmi %}<div style="font-size: 0.75rem; color: var(--text-muted);">BMI: {{ v.bmi }}</div>{% endif %}
+            {% else %}-{% endif %}
+          </td>
+          <td>
+            {% if v.oxygen_saturation %}{{ v.oxygen_saturation }}%{% else %}-{% endif %}
+          </td>
+          <td style="font-size: 0.8rem; color: var(--text-secondary);">
+            {{ v.notes|default:"-" }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            No vitals logged yet. Click "Record Measurement" to start your physiological timeline.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

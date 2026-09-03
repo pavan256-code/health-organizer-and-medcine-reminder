@@ -1,0 +1,51 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Log Refill - {{ medicine.name }} - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Log Medication Refill</h1>
+    <span class="dashboard-date-badge">Adding inventory for: {{ medicine.name }} (Current: {{ medicine.stock.current_stock|default:0 }} {{ medicine.stock.unit }})</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:stock_list' %}" class="btn btn-outline btn-sm">← Back to Stock List</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 550px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.refill_quantity.id_for_label }}">Refill Quantity (Units/Tablets) *</label>
+      {{ form.refill_quantity }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.refill_date.id_for_label }}">Refill / Purchase Date *</label>
+      {{ form.refill_date }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.pharmacy_source.id_for_label }}">Pharmacy Source / Chemist</label>
+      {{ form.pharmacy_source }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.cost.id_for_label }}">Total Cost ($ / Local Currency)</label>
+      {{ form.cost }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Notes / Prescription Batch Ref</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'medications:stock_list' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Confirm & Add Stock</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

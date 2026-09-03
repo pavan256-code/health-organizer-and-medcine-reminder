@@ -1,0 +1,213 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}{{ medicine.name }} - Medication Dossier - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>{{ medicine.name }}</h1>
+    <span class="dashboard-date-badge">
+      {{ medicine.get_medicine_type_display }} • {{ medicine.dosage }} • Patient: {{ medicine.family_member.full_name }}
+    </span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:schedule_add' medicine.id %}" class="btn btn-primary btn-sm">+ Dosing Schedule</a>
+    <a href="{% url 'medications:stock_refill' medicine.id %}" class="btn btn-outline btn-sm">📦 Refill Inventory</a>
+    <a href="{% url 'medications:expiry_add' medicine.id %}" class="btn btn-outline btn-sm">⚠️ Add Batch Lot</a>
+    <a href="{% url 'medications:medicine_edit' medicine.id %}" class="btn btn-outline btn-sm">Edit Details</a>
+    <a href="{% url 'medications:medicine_delete' medicine.id %}" class="btn btn-outline btn-sm" style="color: var(--danger);">Discontinue</a>
+    <a href="{% url 'medications:medicine_list' %}" class="btn btn-outline btn-sm">← Back to List</a>
+  </div>
+</div>
+
+<!-- Primary Stats -->
+<div class="grid-4" style="gap: 1.25rem; margin-bottom: 1.5rem;">
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Formulation</div>
+      <div class="metric-value" style="font-size: 1.3rem;">{{ medicine.get_medicine_type_display }}</div>
+    </div>
+    <div class="metric-icon-box">💊</div>
+  </div>
+
+  <div class="metric-card {% if medicine.stock.is_low_stock %}danger{% else %}success{% endif %}">
+    <div>
+      <div class="metric-label">Units in Stock</div>
+      <div class="metric-value">{{ medicine.stock.current_stock|default:"0" }}</div>
+    </div>
+    <div class="metric-icon-box">📦</div>
+  </div>
+
+  <div class="metric-card info">
+    <div>
+      <div class="metric-label">Active Schedules</div>
+      <div class="metric-value">{{ schedules|length }}</div>
+    </div>
+    <div class="metric-icon-box">⏰</div>
+  </div>
+
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Prescribed By</div>
+      <div class="metric-value" style="font-size: 1.1rem;">{{ medicine.prescribed_by|default:"Self / OTC" }}</div>
+    </div>
+    <div class="metric-icon-box">🩺</div>
+  </div>
+</div>
+
+<div class="grid-2" style="gap: 1.5rem; align-items: start;">
+  <!-- Left: Medical Specifications & Dosing Schedules -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div class="card">
+      <div class="card-header">
+        <span>📋 Clinical Instructions & Regimen</span>
+      </div>
+      <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; font-size: 0.9rem;">
+          <div>
+            <span style="color: var(--text-muted); display: block;">Generic / Molecule:</span>
+            <strong>{{ medicine.generic_name|default:"Not specified" }}</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block;">Brand Name:</span>
+            <strong>{{ medicine.brand_name|default:"Not specified" }}</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block;">Strength & Unit:</span>
+            <strong>{{ medicine.strength }} {{ medicine.unit }}</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block;">Dietary Instructions:</span>
+            <strong>{{ medicine.get_instructions_display }}</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block;">Start Date:</span>
+            <strong>{{ medicine.start_date|date:"Y-m-d" }}</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block;">End Date:</span>
+            <strong>{{ medicine.end_date|date:"Y-m-d"|default:"Ongoing / Chronic" }}</strong>
+          </div>
+        </div>
+        {% if medicine.notes %}
+          <div style="margin-top: 1rem; padding: 0.75rem; background-color: var(--bg-main); border-radius: var(--radius-sm); font-size: 0.85rem;">
+            <strong>Physician Notes:</strong> {{ medicine.notes }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Active Schedules -->
+    <div class="card">
+      <div class="card-header">
+        <span>⏰ Configured Dosing Routines</span>
+        <a href="{% url 'medications:schedule_add' medicine.id %}" class="btn btn-outline btn-sm">+ Routine</a>
+      </div>
+      <div class="card-body">
+        {% for s in schedules %}
+          <div style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>{{ s.get_frequency_display }}</strong>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.2rem;">
+                Times: <strong>{{ s.specific_times|join:", " }}</strong>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <a href="{% url 'medications:schedule_edit' s.id %}" class="btn btn-outline btn-sm">Edit</a>
+              <a href="{% url 'medications:schedule_delete' s.id %}" class="btn btn-outline btn-sm" style="color: var(--danger);">Deactivate</a>
+            </div>
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-size: 0.85rem;">No active schedules configured yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Expiry Batches -->
+    <div class="card">
+      <div class="card-header">
+        <span>⚠️ Pharmaceutical Lot & Expiry</span>
+        <a href="{% url 'medications:expiry_add' medicine.id %}" class="btn btn-outline btn-sm">+ Lot</a>
+      </div>
+      <div class="card-body">
+        {% for b in expiry_batches %}
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--divider);">
+            <div>
+              <strong>Lot {{ b.batch_number }}</strong> • Exp: {{ b.expiry_date|date:"Y-m-d" }}
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ b.days_remaining }} days remaining</div>
+            </div>
+            <span class="badge {% if b.status == 'EXPIRED' %}badge-danger{% elif b.status == 'EXPIRING_SOON' %}badge-warning{% else %}badge-success{% endif %}">
+              {{ b.get_status_display }}
+            </span>
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-size: 0.85rem;">No batch lots recorded.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Stock & Refills, Recent Dose Logs -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Inventory & Refill Log -->
+    <div class="card">
+      <div class="card-header">
+        <span>📦 Inventory & Refill History</span>
+        <a href="{% url 'medications:stock_refill' medicine.id %}" class="btn btn-outline btn-sm">+ Log Refill</a>
+      </div>
+      <div class="card-body">
+        {% if medicine.stock %}
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; background-color: var(--bg-main); padding: 0.75rem; border-radius: var(--radius-sm);">
+            <div>
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Current:</span>
+              <div style="font-size: 1.25rem; font-weight: 700;">{{ medicine.stock.current_stock }} {{ medicine.stock.unit }}</div>
+            </div>
+            <div>
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Minimum Alert:</span>
+              <div style="font-size: 1.25rem; font-weight: 700;">{{ medicine.stock.minimum_stock_level }}</div>
+            </div>
+            <div>
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Total Consumed:</span>
+              <div style="font-size: 1.25rem; font-weight: 700;">{{ medicine.stock.consumed_quantity }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Recent Refills</h4>
+        {% for r in refills %}
+          <div style="display: flex; justify-content: space-between; padding: 0.45rem 0; font-size: 0.85rem; border-bottom: 1px solid var(--divider);">
+            <span>+{{ r.refill_quantity }} units on {{ r.refill_date|date:"Y-m-d" }}</span>
+            <span style="color: var(--text-muted);">{{ r.pharmacy_source|default:"Local" }}</span>
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-size: 0.85rem;">No refill purchases recorded yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recent Medication Dose Logs -->
+    <div class="card">
+      <div class="card-header">
+        <span>📝 Medication Administration Log</span>
+      </div>
+      <div class="card-body">
+        {% for log in recent_logs %}
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--divider); font-size: 0.85rem;">
+            <div>
+              <span class="badge {% if log.status == 'TAKEN' %}badge-success{% elif log.status == 'SKIPPED' %}badge-warning{% else %}badge-danger{% endif %}">
+                {{ log.status }}
+              </span>
+              <span style="margin-left: 0.5rem;">{{ log.actual_time|date:"M d, H:i" }}</span>
+            </div>
+            {% if log.reason_for_skip %}
+              <span style="color: var(--text-muted); font-size: 0.78rem;">{{ log.reason_for_skip }}</span>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-size: 0.85rem;">No dose history recorded yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

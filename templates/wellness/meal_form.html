@@ -1,0 +1,63 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Log Meal - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Log Meal & Nutrition</h1>
+    <span class="dashboard-date-badge">Enter consumed food items, estimated calories, and hydration</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'wellness:diet_overview' %}" class="btn btn-outline btn-sm">← Back to Diet</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.family_member.id_for_label }}">Patient *</label>
+        {{ form.family_member }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.date.id_for_label }}">Date *</label>
+        {{ form.date }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.meal_type.id_for_label }}">Meal Type *</label>
+      {{ form.meal_type }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.food_items.id_for_label }}">Food Items & Portion Size *</label>
+      {{ form.food_items }}
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.calories.id_for_label }}">Estimated Calories (kcal)</label>
+        {{ form.calories }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.water_intake_ml.id_for_label }}">Water Intake (ml)</label>
+        {{ form.water_intake_ml }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Dietary Notes / Macros</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'wellness:diet_overview' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Meal</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

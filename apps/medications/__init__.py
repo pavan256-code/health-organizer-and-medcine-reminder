@@ -1,0 +1,3 @@
+"""
+Medications application package.
+"""

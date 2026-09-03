@@ -1,0 +1,90 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+  .auth-viewport {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.25rem;
+    background:
+      radial-gradient(circle at 50% 10%, rgba(14, 165, 233, 0.18), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.1), transparent 50%),
+      var(--bg-main);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl), 0 0 30px rgba(14, 165, 233, 0.1);
+    padding: 2.5rem 2.25rem;
+    position: relative;
+    z-index: 10;
+    animation: slideDown 300ms ease;
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .auth-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    background: var(--primary-gradient-vivid);
+    color: white;
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 6px 18px var(--primary-glow);
+    transition: transform var(--transition-fast);
+  }
+
+  .auth-logo:hover {
+    transform: scale(1.08) rotate(4deg);
+  }
+
+  .auth-heading {
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+  }
+
+  .auth-subheading {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+</style>
+{% endblock %}
+
+{% block body_content %}
+<div class="auth-viewport">
+  <div class="auth-card">
+    <div class="auth-header">
+      <a href="{% url 'core:landing' %}" class="auth-logo" title="Home">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          <path d="M12 5v6l2 2"/>
+        </svg>
+      </a>
+      <h2 class="auth-heading">{% block auth_heading %}{{ APP_NAME }}{% endblock %}</h2>
+      <p class="auth-subheading">{% block auth_subheading %}Secure Local Healthcare & Medicine Organizer{% endblock %}</p>
+    </div>
+
+    {% include "components/messages.html" %}
+
+    {% block auth_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

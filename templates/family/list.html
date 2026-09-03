@@ -1,0 +1,85 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Family Members - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Family Members & Dependents</h1>
+    <span class="dashboard-date-badge">Maintain distinct medical records and medicine schedules for each member</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'family:add' %}" class="btn btn-primary">
+      ➕ Add Family Member
+    </a>
+  </div>
+</div>
+
+<div class="grid-3" style="gap: 1.5rem;">
+  {% for m in members %}
+  <div class="card" style="position: relative; {% if m.id == active_family_member.id %}border: 2px solid #0f172a; box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);{% endif %}">
+    {% if m.id == active_family_member.id %}
+      <div style="position: absolute; top: 12px; right: 12px;">
+        <span class="badge badge-dark">Active Patient</span>
+      </div>
+    {% endif %}
+
+    <div class="card-body" style="text-align: center; padding-top: 1.75rem;">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 700; margin: 0 auto 1rem; box-shadow: var(--shadow-sm);">
+        {% if m.avatar %}
+          <img src="{{ m.avatar.url }}" alt="{{ m.full_name }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        {% else %}
+          {{ m.first_name|slice:":1" }}
+        {% endif %}
+      </div>
+
+      <h3 style="font-size: 1.15rem; margin-bottom: 0.25rem;">{{ m.full_name }}</h3>
+      <div class="badge badge-muted" style="margin-bottom: 1rem;">
+        {{ m.get_relationship_display }}
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; text-align: left; background-color: var(--bg-main); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8rem; margin-bottom: 1.25rem;">
+        <div>
+          <span style="color: var(--text-muted); display: block;">Age:</span>
+          <strong>{{ m.age|default:"Not set" }} {% if m.age %}yrs{% endif %}</strong>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); display: block;">Blood Group:</span>
+          <strong>{{ m.blood_group }}</strong>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); display: block;">Gender:</span>
+          <strong>{{ m.get_gender_display }}</strong>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); display: block;">Emergency:</span>
+          <strong>{{ m.emergency_contact|default:"None" }}</strong>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+        <form action="{% url 'family:switch' m.id %}" method="post" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm {% if m.id == active_family_member.id %}btn-outline{% else %}btn-primary{% endif %}">
+            {% if m.id == active_family_member.id %}✓ Selected{% else %}Switch Context{% endif %}
+          </button>
+        </form>
+        <a href="{% url 'family:detail' m.id %}" class="btn btn-outline btn-sm">Dossier</a>
+        <a href="{% url 'family:edit' m.id %}" class="btn btn-outline btn-sm">Edit</a>
+        {% if m.relationship != 'SELF' %}
+          <a href="{% url 'family:delete' m.id %}" class="btn btn-outline btn-sm" style="color: var(--danger);">Deactivate</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="card card-body" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+    <h3>No family profiles added yet</h3>
+    <p>Add family members to track their medications, appointments, and vitals independently.</p>
+    <a href="{% url 'family:add' %}" class="btn btn-primary" style="margin-top: 1rem;">
+      ➕ Add First Family Member
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

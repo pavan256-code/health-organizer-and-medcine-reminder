@@ -1,0 +1,94 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}System Administration - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>System Administration Console</h1>
+    <span class="dashboard-date-badge">Instance telemetry, local database footprint, and active sessions</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'backups:backup_list' %}" class="btn btn-primary btn-sm">💾 Database Backups</a>
+    <a href="{% url 'audit:audit_list' %}" class="btn btn-outline btn-sm">Security Audit Trail</a>
+  </div>
+</div>
+
+<!-- Telemetry Metrics Grid -->
+<div class="grid-4" style="gap: 1.25rem; margin-bottom: 1.5rem;">
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Registered Accounts</div>
+      <div class="metric-value">{{ user_count }}</div>
+    </div>
+    <div class="metric-icon-box">👥</div>
+  </div>
+
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Family Patient Profiles</div>
+      <div class="metric-value">{{ family_member_count }}</div>
+    </div>
+    <div class="metric-icon-box">👨‍👩‍👧‍👦</div>
+  </div>
+
+  <div class="metric-card info">
+    <div>
+      <div class="metric-label">Prescribed Medicines</div>
+      <div class="metric-value">{{ medicine_count }}</div>
+    </div>
+    <div class="metric-icon-box">💊</div>
+  </div>
+
+  <div class="metric-card success">
+    <div>
+      <div class="metric-label">Local Database Size</div>
+      <div class="metric-value">{{ db_size_mb }} MB</div>
+    </div>
+    <div class="metric-icon-box">💾</div>
+  </div>
+</div>
+
+<div class="grid-2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+  <!-- Active User Sessions -->
+  <div class="card">
+    <div class="card-header">
+      <span>🖥️ Active Logged Sessions</span>
+    </div>
+    <div class="card-body">
+      {% for s in active_sessions %}
+        <div style="padding: 0.65rem 0; border-bottom: 1px solid var(--divider); display: flex; justify-content: space-between; font-size: 0.85rem;">
+          <div>
+            <strong>{{ s.user.username }}</strong> ({{ s.ip_address|default:"Localhost" }})
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ s.device_name|default:"Desktop Browser" }}</div>
+          </div>
+          <span style="color: var(--text-muted);">{{ s.last_activity|date:"M d, H:i" }}</span>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 0.85rem;">No active tracked sessions.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Recent Audit Events -->
+  <div class="card">
+    <div class="card-header">
+      <span>🛡️ Recent Audit Security Events</span>
+      <a href="{% url 'audit:audit_list' %}" class="btn btn-outline btn-sm">Full Trail</a>
+    </div>
+    <div class="card-body">
+      {% for a in recent_audits %}
+        <div style="padding: 0.65rem 0; border-bottom: 1px solid var(--divider); font-size: 0.85rem;">
+          <div style="display: flex; justify-content: space-between;">
+            <span class="badge badge-primary">{{ a.action }}</span>
+            <span style="color: var(--text-muted); font-size: 0.75rem;">{{ a.created_at|date:"M d, H:i" }}</span>
+          </div>
+          <div style="margin-top: 0.25rem;">{{ a.description }}</div>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 0.85rem;">No audit logs recorded yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

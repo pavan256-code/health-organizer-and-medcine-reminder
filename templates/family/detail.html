@@ -1,0 +1,94 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}{{ member.full_name }} Dossier - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Patient Dossier: {{ member.full_name }}</h1>
+    <span class="dashboard-date-badge">{{ member.get_relationship_display }} • Age: {{ member.age|default:"N/A" }} • Blood Group: {{ member.blood_group }}</span>
+  </div>
+  <div class="quick-actions-bar">
+    <form action="{% url 'family:switch' member.id %}" method="post" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-sm">Make Active Patient</button>
+    </form>
+    <a href="{% url 'family:edit' member.id %}" class="btn btn-outline btn-sm">Edit Details</a>
+    <a href="{% url 'family:list' %}" class="btn btn-outline btn-sm">← Back to List</a>
+  </div>
+</div>
+
+<div class="grid-3" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Active Medicines</div>
+      <div class="metric-value">{{ active_medicines|length|default:"0" }}</div>
+    </div>
+    <div class="metric-icon-box">💊</div>
+  </div>
+
+  <div class="metric-card info">
+    <div>
+      <div class="metric-label">Known Allergies</div>
+      <div class="metric-value">{{ allergies|length|default:"0" }}</div>
+    </div>
+    <div class="metric-icon-box">🛡️</div>
+  </div>
+
+  <div class="metric-card success">
+    <div>
+      <div class="metric-label">Vaccinations</div>
+      <div class="metric-value">{{ vaccinations|length|default:"0" }}</div>
+    </div>
+    <div class="metric-icon-box">💉</div>
+  </div>
+</div>
+
+<div class="grid-2" style="gap: 1.5rem;">
+  <!-- Active Medications -->
+  <div class="card">
+    <div class="card-header">
+      <span>💊 Active Prescribed Medicines</span>
+      <a href="{% url 'medications:medicine_add' %}" class="btn btn-outline btn-sm">+ Add</a>
+    </div>
+    <div class="card-body">
+      {% for med in active_medicines %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--divider);">
+          <div>
+            <strong>{{ med.name }}</strong> ({{ med.strength }}{{ med.unit }})
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ med.dosage }} • {{ med.get_instructions_display }}</div>
+          </div>
+          <span class="badge badge-success">Active</span>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 0.85rem;">No active medicines recorded for this member.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Recent Clinical Vitals -->
+  <div class="card">
+    <div class="card-header">
+      <span>❤️ Recent Health Vitals</span>
+      <a href="{% url 'medical:vital_add' %}" class="btn btn-outline btn-sm">+ Record</a>
+    </div>
+    <div class="card-body">
+      {% for v in recent_vitals %}
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--divider);">
+          <div>
+            <strong>{{ v.date|date:"M d, Y" }}</strong>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">
+              BP: {{ v.blood_pressure_systolic }}/{{ v.blood_pressure_diastolic }} mmHg • Sugar: {{ v.blood_sugar_fasting|default:"-" }} mg/dL
+            </div>
+          </div>
+          {% if v.bmi %}
+            <span class="badge badge-info">BMI {{ v.bmi }}</span>
+          {% endif %}
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 0.85rem;">No vital measurements recorded yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

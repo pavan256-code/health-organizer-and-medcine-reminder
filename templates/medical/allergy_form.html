@@ -1,0 +1,64 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Record Allergy - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Document Hypersensitivity / Allergy</h1>
+    <span class="dashboard-date-badge">Identify drug, food, or chemical allergens and symptoms of reaction</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:allergy_list' %}" class="btn btn-outline btn-sm">← Back to Allergies</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 650px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.family_member.id_for_label }}">Patient *</label>
+        {{ form.family_member }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.allergen.id_for_label }}">Allergen Substance *</label>
+        {{ form.allergen }}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.allergy_type.id_for_label }}">Category *</label>
+        {{ form.allergy_type }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.severity.id_for_label }}">Severity Level *</label>
+        {{ form.severity }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.reaction.id_for_label }}">Observed Clinical Reaction *</label>
+      {{ form.reaction }}
+      <div class="form-help">e.g. Swelling, Urticaria, Bronchospasm, Anaphylaxis</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.date_identified.id_for_label }}">Date First Identified</label>
+      {{ form.date_identified }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Clinical Management Notes</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'medical:allergy_list' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Allergy Profile</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

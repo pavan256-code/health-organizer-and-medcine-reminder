@@ -1,0 +1,58 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Sleep Journal - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Sleep Journal & Analysis</h1>
+    <span class="dashboard-date-badge">Nightly sleep duration, quality rating, and sleep continuity</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'wellness:sleep_add' %}" class="btn btn-primary">➕ Log Sleep</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Patient</th>
+          <th>Bedtime</th>
+          <th>Wake-up</th>
+          <th>Duration</th>
+          <th>Quality Rating</th>
+          <th>Interruptions</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sleep_records %}
+        <tr>
+          <td style="font-weight: 600;">{{ s.date|date:"Y-m-d" }}</td>
+          <td>{{ s.family_member.full_name }}</td>
+          <td>{{ s.bedtime|time:"H:i" }}</td>
+          <td>{{ s.wake_time|time:"H:i" }}</td>
+          <td><strong>{{ s.duration_hours }} hrs</strong></td>
+          <td>
+            <span class="badge {% if s.sleep_quality == 'EXCELLENT' %}badge-success{% elif s.sleep_quality == 'GOOD' %}badge-info{% elif s.sleep_quality == 'FAIR' %}badge-warning{% else %}badge-danger{% endif %}">
+              {{ s.get_sleep_quality_display }}
+            </span>
+          </td>
+          <td>{{ s.interruptions_count }}</td>
+          <td style="font-size: 0.8rem; color: var(--text-secondary);">{{ s.notes|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            No sleep records logged yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

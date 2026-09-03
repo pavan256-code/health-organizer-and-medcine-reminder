@@ -1,0 +1,77 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Drug Interaction Checker - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Local Drug Interaction Checker</h1>
+    <span class="dashboard-date-badge">Rule-based pharmaceutical cross-screening evaluated strictly offline</span>
+  </div>
+</div>
+
+<!-- Automated Screening of Active Regimen -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <span>🛡️ Automated Regimen Screening: {{ member.full_name }}</span>
+  </div>
+  <div class="card-body">
+    {% if auto_conflicts %}
+      <div class="alert alert-danger" style="margin-bottom: 1rem;">
+        <strong>⚠️ Clinical Conflict Detected in Current Regimen!</strong>
+        Review the interaction mechanism and consult your prescribing doctor.
+      </div>
+      {% for c in auto_conflicts %}
+        <div style="padding: 1rem; border: 1px solid var(--danger); border-radius: var(--radius-md); background-color: rgba(239, 68, 68, 0.05); margin-bottom: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <strong style="font-size: 1.05rem; color: var(--danger);">{{ c.drugs.0|capfirst }} + {{ c.drugs.1|capfirst }}</strong>
+            <span class="badge badge-danger">{{ c.severity }}</span>
+          </div>
+          <div style="font-size: 0.88rem; margin-bottom: 0.25rem;"><strong>Mechanism:</strong> {{ c.mechanism }}</div>
+          <div style="font-size: 0.88rem; margin-bottom: 0.25rem;"><strong>Clinical Effect:</strong> {{ c.effect }}</div>
+          <div style="font-size: 0.88rem; color: var(--text-main);"><strong>Recommendation:</strong> {{ c.action }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--success);">
+        <span style="font-size: 1.5rem;">✓</span>
+        <div>
+          <strong>No known adverse drug interactions detected</strong> among currently prescribed active medications for {{ member.full_name }}.
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Manual Drug Interaction Form -->
+<div class="card">
+  <div class="card-header">
+    <span>🔍 Cross-Screen Any Two or More Drugs</span>
+  </div>
+  <div class="card-body">
+    <form method="get" style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+      <input type="text" name="drugs" class="form-control" placeholder="Enter comma-separated drug names (e.g. Warfarin, Aspirin)" value="{{ query_drugs }}">
+      <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Check Interaction</button>
+    </form>
+
+    {% if query_drugs %}
+      <h4>Results for: <em>{{ query_drugs }}</em></h4>
+      {% if manual_conflicts %}
+        {% for c in manual_conflicts %}
+          <div style="padding: 1rem; border: 1px solid var(--danger); border-radius: var(--radius-md); background-color: rgba(239, 68, 68, 0.05); margin-bottom: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <strong style="font-size: 1.05rem; color: var(--danger);">{{ c.drugs.0|capfirst }} + {{ c.drugs.1|capfirst }}</strong>
+              <span class="badge badge-danger">{{ c.severity }}</span>
+            </div>
+            <div style="font-size: 0.88rem; margin-bottom: 0.25rem;"><strong>Mechanism:</strong> {{ c.mechanism }}</div>
+            <div style="font-size: 0.88rem; margin-bottom: 0.25rem;"><strong>Clinical Effect:</strong> {{ c.effect }}</div>
+            <div style="font-size: 0.88rem; color: var(--text-main);"><strong>Clinical Action:</strong> {{ c.action }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p style="color: var(--success); font-weight: 600;">✓ No known adverse interaction found in local database for the entered drugs.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

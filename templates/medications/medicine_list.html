@@ -1,0 +1,133 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}My Medicines - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Medication Catalog</h1>
+    <span class="dashboard-date-badge">
+      {% if active_family_member %}Prescribed medications for {{ active_family_member.full_name }}{% else %}All registered family medicines{% endif %}
+    </span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:medicine_add' %}" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Medication
+    </a>
+    <a href="{% url 'medications:schedule_list' %}" class="btn btn-outline btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Schedules
+    </a>
+    <a href="{% url 'medications:stock_list' %}" class="btn btn-outline btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+      Inventory
+    </a>
+    <a href="{% url 'medications:expiry_list' %}" class="btn btn-outline btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Expiry Tracker
+    </a>
+    <a href="{% url 'medications:adherence_dashboard' %}" class="btn btn-outline btn-sm">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Adherence
+    </a>
+  </div>
+</div>
+
+<!-- Search & Filter Controls -->
+<div class="card" style="margin-bottom: 1.5rem; padding: 1.25rem;">
+  <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <div style="flex: 1; min-width: 200px;">
+      <input type="text" name="q" class="form-control" placeholder="Search by name, generic, or doctor..." value="{{ search_query }}">
+    </div>
+
+    <div>
+      <select name="type" class="form-select" style="min-width: 160px;">
+        <option value="">All Formulations</option>
+        {% for type_val, type_label in type_choices %}
+          <option value="{{ type_val }}" {% if type_val == selected_type %}selected{% endif %}>{{ type_label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <select name="status" class="form-select" style="min-width: 150px;">
+        <option value="">All Statuses</option>
+        {% for status_val, status_label in status_choices %}
+          <option value="{{ status_val }}" {% if status_val == selected_status %}selected{% endif %}>{{ status_label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+    <a href="{% url 'medications:medicine_list' %}" class="btn btn-outline btn-sm">Reset</a>
+  </form>
+</div>
+
+<!-- Medications Grid -->
+<div class="grid-3" style="gap: 1.5rem;">
+  {% for med in medicines %}
+    <div class="card" style="display: flex; flex-direction: column;">
+      <div class="card-header">
+        <div>
+          <span class="badge badge-primary">{{ med.get_medicine_type_display }}</span>
+        </div>
+        <span class="badge {% if med.status == 'ACTIVE' %}badge-success{% elif med.status == 'COMPLETED' %}badge-info{% else %}badge-muted{% endif %}">
+          {{ med.get_status_display }}
+        </span>
+      </div>
+
+      <div class="card-body" style="flex: 1;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">
+          <a href="{% url 'medications:medicine_detail' med.id %}">{{ med.name }}</a>
+        </h3>
+        {% if med.generic_name %}
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            ({{ med.generic_name }})
+          </div>
+        {% endif %}
+
+        <div style="background-color: var(--bg-main); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.35rem;">
+          <div><strong>Dosage:</strong> {{ med.dosage }} ({{ med.strength }}{{ med.unit }})</div>
+          <div><strong>Instructions:</strong> {{ med.get_instructions_display }}</div>
+          <div><strong>Patient:</strong> {{ med.family_member.full_name }}</div>
+          {% if med.stock %}
+            <div style="display: flex; justify-content: space-between; margin-top: 0.25rem; font-weight: 600;">
+              <span>Stock Remaining:</span>
+              <span style="color: {% if med.stock.is_low_stock %}var(--danger){% else %}var(--success){% endif %};">
+                {{ med.stock.current_stock }} {{ med.stock.unit }}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'medications:medicine_detail' med.id %}" class="btn btn-outline btn-sm">Dossier</a>
+        <div style="display: flex; gap: 0.4rem;">
+          <a href="{% url 'medications:schedule_add' med.id %}" class="btn btn-outline btn-sm" title="Add Schedule">+ Routine</a>
+          <a href="{% url 'medications:medicine_edit' med.id %}" class="btn btn-outline btn-sm">Edit</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="card card-body" style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--divider); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; color: var(--text-muted);">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+      </div>
+      <h2 style="margin-bottom: 0.5rem;">No medications found</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto;">
+        {% if search_query or selected_type or selected_status %}
+          No medicines match your active search filters. Try clearing your filters.
+        {% else %}
+          You haven't added any medications for this patient yet.
+        {% endif %}
+      </p>
+      <a href="{% url 'medications:medicine_add' %}" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add New Medication
+      </a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

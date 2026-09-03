@@ -1,0 +1,71 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Diet & Hydration - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Nutrition & Daily Hydration</h1>
+    <span class="dashboard-date-badge">Meal logging, calorie estimation, and hydration tracker</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'wellness:meal_add' %}" class="btn btn-primary">➕ Log Meal</a>
+  </div>
+</div>
+
+<!-- Daily Nutrition Summary -->
+<div class="grid-3" style="gap: 1.25rem; margin-bottom: 1.5rem;">
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Today's Calorie Intake</div>
+      <div class="metric-value">{{ total_calories }} kcal</div>
+    </div>
+    <div class="metric-icon-box">🥗</div>
+  </div>
+
+  <div class="metric-card info">
+    <div>
+      <div class="metric-label">Today's Hydration</div>
+      <div class="metric-value">{{ total_water }} ml</div>
+    </div>
+    <div class="metric-icon-box">💧</div>
+  </div>
+
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Quick Hydration Log</div>
+      <div style="margin-top: 0.5rem;">
+        <form action="{% url 'wellness:water_log' %}" method="post" style="display: flex; gap: 0.5rem;">
+          {% csrf_token %}
+          <input type="hidden" name="amount_ml" value="250">
+          <button type="submit" class="btn btn-primary btn-sm">+250ml Glass</button>
+        </form>
+      </div>
+    </div>
+    <div class="metric-icon-box">🥤</div>
+  </div>
+</div>
+
+<!-- Today's Meals -->
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-header">
+    <span>🍽️ Today's Logged Meals</span>
+  </div>
+  <div class="card-body">
+    {% for meal in todays_meals %}
+      <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--divider); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span class="badge badge-primary">{{ meal.get_meal_type_display }}</span>
+          <strong style="margin-left: 0.5rem;">{{ meal.food_items }}</strong>
+        </div>
+        <div>
+          {% if meal.calories %}<span>{{ meal.calories }} kcal</span>{% endif %}
+          {% if meal.water_intake_ml %}<span style="margin-left: 0.75rem; color: var(--info);">💧 {{ meal.water_intake_ml }}ml</span>{% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p style="color: var(--text-muted); font-size: 0.85rem;">No meals logged today yet. Click "Log Meal" to record your breakfast, lunch, or dinner.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

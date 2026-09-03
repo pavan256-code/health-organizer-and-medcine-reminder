@@ -1,0 +1,94 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Emergency Health ID Card - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Emergency Medical ID Card</h1>
+    <span class="dashboard-date-badge">Patient: {{ member.full_name }} • Printable emergency responder card</span>
+  </div>
+  <div class="quick-actions-bar">
+    <button onclick="window.print()" class="btn btn-primary">🖨️ Print Card</button>
+  </div>
+</div>
+
+<!-- Emergency Wallet Card Layout -->
+<div class="card" style="max-width: 650px; margin: 0 auto; border: 3px solid #ef4444; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.15);">
+  <!-- Header Bar -->
+  <div style="background-color: #ef4444; color: white; padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; opacity: 0.9;">Universal Medical ID</span>
+      <h2 style="color: white; margin: 0; font-size: 1.5rem;">EMERGENCY HEALTH CARD</h2>
+    </div>
+    <div style="font-size: 2.25rem;">🚨</div>
+  </div>
+
+  <div class="card-body" style="padding: 1.5rem;">
+    <div class="grid-2" style="margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+      <div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">PATIENT FULL NAME</div>
+        <div style="font-size: 1.3rem; font-weight: 800;">{{ member.full_name }}</div>
+        <div style="font-size: 0.85rem; color: var(--text-secondary);">DOB: {{ member.date_of_birth|default:"Not specified" }}</div>
+      </div>
+      <div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">BLOOD GROUP</div>
+        <div style="font-size: 1.8rem; font-weight: 900; color: #ef4444;">{{ member.blood_group }}</div>
+      </div>
+    </div>
+
+    <!-- Emergency Contacts -->
+    <div style="background-color: var(--bg-main); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+      <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+        Primary Emergency Contacts
+      </div>
+      <div>
+        <strong>{{ member.emergency_contact_name|default:"Not provided" }}</strong>:
+        <span style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">{{ member.emergency_contact_phone|default:"N/A" }}</span>
+      </div>
+    </div>
+
+    <!-- Allergies -->
+    <div style="margin-bottom: 1.25rem;">
+      <div style="font-size: 0.8rem; font-weight: 700; color: #ef4444; text-transform: uppercase; margin-bottom: 0.35rem;">
+        ⚠️ Known Allergies & Drug Sensitivities
+      </div>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        {% for a in allergies %}
+          <span class="badge badge-danger" style="font-size: 0.85rem;">{{ a.allergen }} ({{ a.severity }})</span>
+        {% empty %}
+          <span style="font-size: 0.85rem; color: var(--text-muted);">No known allergies recorded.</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Medical Conditions -->
+    {% if health_profile.medical_conditions %}
+      <div style="margin-bottom: 1.25rem;">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem;">
+          Medical Diagnoses / Conditions
+        </div>
+        <div style="font-size: 0.88rem;">{{ health_profile.medical_conditions }}</div>
+      </div>
+    {% endif %}
+
+    <!-- Active Medicines -->
+    <div>
+      <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.35rem;">
+        Current Active Medications
+      </div>
+      <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.88rem; display: flex; flex-direction: column; gap: 0.25rem;">
+        {% for m in active_meds %}
+          <li><strong>{{ m.name }}</strong> ({{ m.dosage }}) - {{ m.get_instructions_display }}</li>
+        {% empty %}
+          <li style="color: var(--text-muted); list-style-type: none;">No ongoing medications.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div style="background-color: var(--bg-main); padding: 0.75rem 1.5rem; border-top: 1px solid var(--border-color); font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+    Notice to Medical Responders: Present this card to attending emergency medical technicians or ER physicians.
+  </div>
+</div>
+{% endblock %}

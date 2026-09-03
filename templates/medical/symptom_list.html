@@ -1,0 +1,56 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Symptom Journal - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Symptom Journal & Logs</h1>
+    <span class="dashboard-date-badge">Track symptom occurrences, triggers, severity levels, and duration</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:symptom_add' %}" class="btn btn-primary">➕ Log Symptom</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Symptom</th>
+          <th>Patient</th>
+          <th>Severity</th>
+          <th>Duration</th>
+          <th>Triggers</th>
+          <th>Clinical Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in symptoms %}
+        <tr>
+          <td style="font-weight: 600; white-space: nowrap;">{{ s.date|date:"Y-m-d" }} @ {{ s.time|time:"H:i" }}</td>
+          <td><strong>{{ s.symptom_name }}</strong></td>
+          <td>{{ s.family_member.full_name }}</td>
+          <td>
+            <span class="badge {% if s.severity == 'SEVERE' %}badge-danger{% elif s.severity == 'MODERATE' %}badge-warning{% else %}badge-info{% endif %}">
+              {{ s.get_severity_display }}
+            </span>
+          </td>
+          <td>{{ s.duration_hours|default:"--" }} hrs</td>
+          <td style="font-size: 0.82rem; color: var(--text-secondary);">{{ s.triggers|default:"None identified" }}</td>
+          <td style="font-size: 0.82rem; color: var(--text-secondary);">{{ s.description|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            No symptom entries recorded yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

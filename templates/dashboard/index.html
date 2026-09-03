@@ -1,0 +1,368 @@
+{% extends "base/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Dashboard - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header Bar -->
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>
+      Hello, <span class="dashboard-greeting-name">{{ user.first_name|default:user.username }}</span>
+      {% if active_family_member %}
+        <span class="badge badge-dark patient-view-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Viewing: {{ active_family_member.full_name }}
+        </span>
+      {% endif %}
+    </h1>
+    <span class="dashboard-date-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      {{ today_date|date:"l, F j, Y" }} • Local Clinical Station
+    </span>
+  </div>
+
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:medicine_add' %}" class="btn btn-primary btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Medicine
+    </a>
+    <a href="{% url 'medical:appointment_add' %}" class="btn btn-outline btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Appointment
+    </a>
+    <a href="{% url 'medical:vital_add' %}" class="btn btn-outline btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 11l-2.08-4L4 12"/></svg>
+      Log Vitals
+    </a>
+    <a href="{% url 'medical:symptom_add' %}" class="btn btn-outline btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      Symptom
+    </a>
+    <a href="{% url 'reports:report_index' %}" class="btn btn-outline btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Export PDF
+    </a>
+  </div>
+</div>
+
+<!-- Key Stat Telemetry Cards -->
+<div class="grid-4" style="gap: 1.25rem; margin-bottom: 2rem;">
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Today's Doses</div>
+      <div class="metric-value font-mono">{{ doses_total_count }}</div>
+      <div class="metric-trend text-muted">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Scheduled doses
+      </div>
+    </div>
+    <div class="metric-icon-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+    </div>
+  </div>
+
+  <div class="metric-card success">
+    <div>
+      <div class="metric-label">Doses Taken</div>
+      <div class="metric-value font-mono">{{ doses_taken_count }}</div>
+      <div class="metric-trend text-success">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Verified taken
+      </div>
+    </div>
+    <div class="metric-icon-box" style="background-color: var(--success-light); color: var(--success);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+  </div>
+
+  <div class="metric-card warning">
+    <div>
+      <div class="metric-label">Pending Doses</div>
+      <div class="metric-value font-mono">{{ doses_pending_count }}</div>
+      <div class="metric-trend text-warning">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Awaiting schedule
+      </div>
+    </div>
+    <div class="metric-icon-box" style="background-color: var(--warning-light); color: var(--warning);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+  </div>
+
+  <div class="metric-card info">
+    <div>
+      <div class="metric-label">Adherence Rate</div>
+      <div class="metric-value font-mono">{{ today_adherence }}%</div>
+      <div class="metric-trend text-primary">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Compliance rate
+      </div>
+    </div>
+    <div class="metric-icon-box" style="background-color: var(--primary-light); color: var(--primary);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- Main 2-Column Clinical Grid -->
+<div class="grid-2" style="gap: 1.75rem; align-items: start;">
+  <!-- Left Column: Medication Schedule & Stock Warnings -->
+  <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+    <!-- Today's Schedule Card -->
+    <div class="card">
+      <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Today's Medicine Schedule</span>
+        </div>
+        <a href="{% url 'medications:schedule_list' %}" style="font-size: 0.82rem; font-weight: 600;">Full Schedule →</a>
+      </div>
+      <div class="card-body">
+        {% if todays_doses %}
+          <div class="dose-list">
+            {% for dose in todays_doses %}
+              <div class="dose-item {% if dose.status == 'TAKEN' %}taken{% elif dose.status == 'MISSED' %}missed{% else %}pending{% endif %}">
+                <div class="dose-time">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span>{{ dose.scheduled_time|time:"H:i" }}</span>
+                </div>
+                <div class="dose-info">
+                  <div class="dose-med-name">{{ dose.schedule.medicine.name }}</div>
+                  <div class="dose-instructions">
+                    <span class="badge badge-muted" style="font-size: 0.72rem;">{{ dose.schedule.medicine.dosage }}</span>
+                    <span>•</span>
+                    <span>{{ dose.schedule.medicine.get_instructions_display }}</span>
+                  </div>
+                </div>
+                <div class="dose-actions">
+                  {% if dose.status == 'TAKEN' %}
+                    <span class="badge badge-success">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Taken
+                    </span>
+                  {% else %}
+                    <form action="{% url 'medications:dose_take' dose.id %}" method="post" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-success btn-sm">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        Take
+                      </button>
+                    </form>
+                    <form action="{% url 'medications:dose_skip' dose.id %}" method="post" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline btn-sm">Skip</button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--divider); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+            </div>
+            <p style="margin-bottom: 1rem; font-weight: 500;">No doses scheduled for today.</p>
+            <a href="{% url 'medications:medicine_add' %}" class="btn btn-primary btn-sm">+ Add Medicine Schedule</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Low Stock & Expiry Warnings -->
+    {% if low_stock_medicines or expiring_medicines %}
+    <div class="card" style="border-left: 4px solid var(--warning);">
+      <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-warning"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Inventory & Safety Alerts</span>
+        </div>
+      </div>
+      <div class="card-body">
+        {% for stock in low_stock_medicines %}
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--divider);">
+            <div>
+              <strong style="font-size: 0.92rem;">{{ stock.medicine.name }}</strong>
+              <div style="font-size: 0.78rem; color: var(--danger); margin-top: 0.15rem;">
+                Only {{ stock.current_stock }} units remaining (Min: {{ stock.minimum_stock_level }})
+              </div>
+            </div>
+            <a href="{% url 'medications:stock_refill' stock.medicine.id %}" class="btn btn-warning btn-sm">Refill</a>
+          </div>
+        {% endfor %}
+
+        {% for exp in expiring_medicines %}
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;">
+            <div>
+              <strong style="font-size: 0.92rem;">{{ exp.medicine.name }}</strong> (Batch: {{ exp.batch_number }})
+              <div style="font-size: 0.78rem; color: {% if exp.status == 'EXPIRED' %}var(--danger){% else %}var(--warning){% endif %}; margin-top: 0.15rem;">
+                {{ exp.get_status_display }} • Expires: {{ exp.expiry_date|date:"Y-m-d" }}
+              </div>
+            </div>
+            <span class="badge {% if exp.status == 'EXPIRED' %}badge-danger{% else %}badge-warning{% endif %}">
+              {{ exp.status }}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Active Health Goals -->
+    {% if active_goals %}
+    <div class="card">
+      <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <span>Active Health Goals</span>
+        </div>
+        <a href="{% url 'wellness:goal_list' %}" style="font-size: 0.82rem; font-weight: 600;">View All →</a>
+      </div>
+      <div class="card-body">
+        {% for goal in active_goals %}
+          <div style="margin-bottom: 1.15rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.45rem;">
+              <span class="font-semibold">{{ goal.get_goal_type_display }}: {{ goal.target_value }} {{ goal.unit }}</span>
+              <span class="font-bold font-mono">{{ goal.progress_percentage }}%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar {% if goal.progress_percentage >= 100 %}success{% endif %}" style="width: {{ goal.progress_percentage }}%;"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right Column: Adherence Meter, Vitals Snapshot, Appointments -->
+  <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+    <!-- Adherence Gauge Card -->
+    <div class="card">
+      <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Today's Adherence</span>
+        </div>
+        <a href="{% url 'analytics:insights_dashboard' %}" style="font-size: 0.82rem; font-weight: 600;">Detailed Analytics →</a>
+      </div>
+      <div class="card-body adherence-container">
+        <div class="adherence-circle" style="--adherence-percent: {{ today_adherence }};">
+          <div class="adherence-number">{{ today_adherence }}%</div>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem; font-weight: 500;">
+          {{ doses_taken_count }} of {{ doses_total_count }} doses completed on schedule
+        </p>
+        <span class="adherence-streak-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Optimal Compliance
+        </span>
+      </div>
+    </div>
+
+    <!-- Latest Vitals Snapshot -->
+    <div class="card">
+      <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-danger"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 11l-2.08-4L4 12"/></svg>
+          <span>Clinical Vitals Telemetry</span>
+        </div>
+        <a href="{% url 'medical:vital_list' %}" style="font-size: 0.82rem; font-weight: 600;">All Vitals →</a>
+      </div>
+      <div class="card-body">
+        {% if latest_vital %}
+          <div class="vital-tile-grid">
+            <div class="vital-tile">
+              <div class="vital-tile-header">
+                <span class="vital-tile-title">Blood Pressure</span>
+                <span class="badge badge-success" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">Normal</span>
+              </div>
+              <div class="vital-tile-value">
+                {{ latest_vital.blood_pressure_systolic }}/{{ latest_vital.blood_pressure_diastolic }}
+                <span class="vital-tile-unit">mmHg</span>
+              </div>
+            </div>
+            <div class="vital-tile">
+              <div class="vital-tile-header">
+                <span class="vital-tile-title">Heart Rate</span>
+                <span class="badge badge-primary" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">Resting</span>
+              </div>
+              <div class="vital-tile-value">
+                {{ latest_vital.heart_rate|default:"--" }}
+                <span class="vital-tile-unit">BPM</span>
+              </div>
+            </div>
+            <div class="vital-tile">
+              <div class="vital-tile-header">
+                <span class="vital-tile-title">Blood Sugar</span>
+                <span class="badge badge-muted" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">Fasting</span>
+              </div>
+              <div class="vital-tile-value">
+                {{ latest_vital.blood_sugar_fasting|default:"--" }}
+                <span class="vital-tile-unit">mg/dL</span>
+              </div>
+            </div>
+            <div class="vital-tile">
+              <div class="vital-tile-header">
+                <span class="vital-tile-title">BMI Index</span>
+                <span class="badge badge-info" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">Score</span>
+              </div>
+              <div class="vital-tile-value">
+                {{ latest_vital.bmi|default:"--" }}
+                <span class="vital-tile-unit">kg/m²</span>
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); text-align: right; margin-top: 1rem; display: flex; align-items: center; justify-content: flex-end; gap: 0.4rem;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Measured on {{ latest_vital.date|date:"M d, Y" }}
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+            <p style="font-size: 0.88rem; margin-bottom: 0.85rem;">No vitals recorded recently.</p>
+            <a href="{% url 'medical:vital_add' %}" class="btn btn-outline btn-sm">+ Record Measurement</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Upcoming Clinical Appointments -->
+    <div class="card">
+      <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Upcoming Doctor Visits</span>
+        </div>
+        <a href="{% url 'medical:appointment_list' %}" style="font-size: 0.82rem; font-weight: 600;">Manage →</a>
+      </div>
+      <div class="card-body">
+        {% if upcoming_appointments %}
+          <div class="appointment-list">
+            {% for appt in upcoming_appointments %}
+              <div class="appointment-item">
+                <div class="appointment-date-badge">
+                  <div class="appointment-date-day">{{ appt.date|date:"d" }}</div>
+                  <div class="appointment-date-month">{{ appt.date|date:"M" }}</div>
+                </div>
+                <div class="appointment-details">
+                  <div class="appointment-doctor-name">{{ appt.doctor.full_name }}</div>
+                  <div class="appointment-specialty">
+                    {{ appt.doctor.specialization }} • {{ appt.time|time:"H:i" }}
+                  </div>
+                </div>
+                <span class="badge badge-primary">Upcoming</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+            <p style="font-size: 0.88rem; margin-bottom: 0.85rem;">No upcoming appointments.</p>
+            <a href="{% url 'medical:appointment_add' %}" class="btn btn-outline btn-sm">+ Schedule Doctor Visit</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

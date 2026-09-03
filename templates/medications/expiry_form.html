@@ -1,0 +1,47 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Register Batch Expiry - {{ medicine.name }} - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Register Batch Lot Expiration</h1>
+    <span class="dashboard-date-badge">Medication: {{ medicine.name }} • Patient: {{ medicine.family_member.full_name }}</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:medicine_detail' medicine.id %}" class="btn btn-outline btn-sm">← Back to Medicine</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 550px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.batch_number.id_for_label }}">Batch / Lot Number *</label>
+      {{ form.batch_number }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.expiry_date.id_for_label }}">Expiration Date *</label>
+      {{ form.expiry_date }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.alert_days_before.id_for_label }}">Alert Warning Days Before Expiry</label>
+      {{ form.alert_days_before }}
+      <div class="form-help">Default 30 days before expiration.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Storage Instructions / Notes</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'medications:medicine_detail' medicine.id %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Batch Lot</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

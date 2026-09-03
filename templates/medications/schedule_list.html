@@ -1,0 +1,75 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Dosing Schedules - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Dosing Schedules & Regimens</h1>
+    <span class="dashboard-date-badge">Automated recurring reminder times across all medicines</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:medicine_list' %}" class="btn btn-primary btn-sm">+ Configure for Medicine</a>
+    <a href="{% url 'medications:adherence_dashboard' %}" class="btn btn-outline btn-sm">Adherence Analytics</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Medicine</th>
+          <th>Patient</th>
+          <th>Frequency</th>
+          <th>Scheduled Times</th>
+          <th>Active Window</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in schedules %}
+        <tr>
+          <td>
+            <strong><a href="{% url 'medications:medicine_detail' s.medicine.id %}">{{ s.medicine.name }}</a></strong>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ s.medicine.dosage }} • {{ s.medicine.get_instructions_display }}</div>
+          </td>
+          <td>{{ s.medicine.family_member.full_name }}</td>
+          <td><span class="badge badge-primary">{{ s.get_frequency_display }}</span></td>
+          <td>
+            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+              {% for t in s.specific_times %}
+                <span class="badge badge-muted">{{ t }}</span>
+              {% endfor %}
+            </div>
+          </td>
+          <td style="font-size: 0.8rem; color: var(--text-secondary);">
+            {{ s.start_date|date:"Y-m-d" }} to {{ s.end_date|date:"Y-m-d"|default:"Ongoing" }}
+          </td>
+          <td>
+            {% if s.is_active %}
+              <span class="badge badge-success">Active</span>
+            {% else %}
+              <span class="badge badge-muted">Inactive</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display: flex; gap: 0.35rem;">
+              <a href="{% url 'medications:schedule_edit' s.id %}" class="btn btn-outline btn-sm">Edit</a>
+              <a href="{% url 'medications:schedule_delete' s.id %}" class="btn btn-outline btn-sm" style="color: var(--danger);">Deactivate</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+            No dosing schedules found. Go to a medicine's details to configure reminder times.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

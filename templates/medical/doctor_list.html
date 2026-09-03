@@ -1,0 +1,54 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Physicians & Specialists - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Doctors & Specialists</h1>
+    <span class="dashboard-date-badge">Medical contacts, clinics, and consulting specialists</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:doctor_add' %}" class="btn btn-primary">➕ Add Doctor</a>
+    <a href="{% url 'medical:appointment_list' %}" class="btn btn-outline btn-sm">📅 Appointments</a>
+  </div>
+</div>
+
+<div class="grid-3" style="gap: 1.5rem;">
+  {% for doc in doctors %}
+  <div class="card" style="display: flex; flex-direction: column;">
+    <div class="card-header">
+      <span class="badge badge-primary">{{ doc.specialization }}</span>
+      <div style="display: flex; gap: 0.35rem;">
+        <a href="{% url 'medical:doctor_edit' doc.id %}" class="btn btn-outline btn-sm">Edit</a>
+        <a href="{% url 'medical:doctor_delete' doc.id %}" class="btn btn-outline btn-sm" style="color: var(--danger);">✕</a>
+      </div>
+    </div>
+    <div class="card-body" style="flex: 1;">
+      <h3 style="font-size: 1.15rem; margin-bottom: 0.35rem;">{{ doc.full_name }}</h3>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        🏥 {{ doc.hospital_clinic|default:"Independent Practice" }}
+      </div>
+
+      <div style="background-color: var(--bg-main); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.82rem; display: flex; flex-direction: column; gap: 0.35rem;">
+        <div>📞 {{ doc.phone|default:"No phone listed" }}</div>
+        <div>✉️ {{ doc.email|default:"No email listed" }}</div>
+        {% if doc.address %}<div>📍 {{ doc.address }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="card-footer">
+      <a href="{% url 'medical:appointment_add' %}?doctor={{ doc.id }}" class="btn btn-outline btn-sm" style="width: 100%;">
+        📅 Book Appointment
+      </a>
+    </div>
+  </div>
+  {% empty %}
+  <div class="card card-body" style="grid-column: 1 / -1; text-align: center; padding: 3.5rem;">
+    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🩺</div>
+    <h2>No doctors added yet</h2>
+    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Build your personal directory of physicians, pediatricians, and specialists.</p>
+    <a href="{% url 'medical:doctor_add' %}" class="btn btn-primary">+ Add First Doctor</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

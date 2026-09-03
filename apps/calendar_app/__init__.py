@@ -1,0 +1,3 @@
+"""
+Calendar application package.
+"""

@@ -1,0 +1,185 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Expiry Surveillance - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<!-- Header Bar -->
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Pharmaceutical Expiry Tracker</h1>
+    <span class="dashboard-date-badge">Real-time surveillance of batch lot numbers and pharmaceutical expiration dates</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:medicine_list' %}" class="btn btn-outline btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+      All Medicines
+    </a>
+  </div>
+</div>
+
+<!-- Telemetry Metric Cards -->
+<div class="grid-4" style="gap: 1.25rem; margin-bottom: 1.75rem;">
+  <!-- Total Tracked -->
+  <div class="metric-card">
+    <div>
+      <div class="metric-label">Total Batches</div>
+      <div class="metric-value">{{ total_batches_count }}</div>
+      <div class="metric-trend text-muted">Surveillance pool</div>
+    </div>
+    <div class="metric-icon-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+    </div>
+  </div>
+
+  <!-- Expired Batches -->
+  <div class="metric-card danger">
+    <div>
+      <div class="metric-label">Expired Batches</div>
+      <div class="metric-value text-danger">{{ expired_count }}</div>
+      <div class="metric-trend text-danger">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Do not administer
+      </div>
+    </div>
+    <div class="metric-icon-box" style="background-color: var(--danger-light); color: var(--danger);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    </div>
+  </div>
+
+  <!-- Expiring Soon -->
+  <div class="metric-card warning">
+    <div>
+      <div class="metric-label">Expiring Soon</div>
+      <div class="metric-value text-warning">{{ expiring_soon_count }}</div>
+      <div class="metric-trend text-warning">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Within 30 days
+      </div>
+    </div>
+    <div class="metric-icon-box" style="background-color: var(--warning-light); color: var(--warning);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+  </div>
+
+  <!-- Safe / Valid -->
+  <div class="metric-card success">
+    <div>
+      <div class="metric-label">Safe Batches</div>
+      <div class="metric-value text-success">{{ safe_count }}</div>
+      <div class="metric-trend text-success">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Optimal shelf life
+      </div>
+    </div>
+    <div class="metric-icon-box" style="background-color: var(--success-light); color: var(--success);">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- Scope & Filter Pills Bar -->
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+  <div class="pill-group" style="display: flex; gap: 0.5rem;">
+    <a href="?scope=patient{% if current_status %}&status={{ current_status }}{% endif %}" class="btn btn-sm {% if current_scope != 'all' %}btn-primary{% else %}btn-outline{% endif %}">
+      Active Patient ({{ active_family_member.full_name|default:"Self" }})
+    </a>
+    <a href="?scope=all{% if current_status %}&status={{ current_status }}{% endif %}" class="btn btn-sm {% if current_scope == 'all' %}btn-primary{% else %}btn-outline{% endif %}">
+      All Family Members
+    </a>
+  </div>
+
+  <div class="filter-status-group" style="display: flex; gap: 0.4rem;">
+    <a href="?scope={{ current_scope }}" class="btn btn-sm {% if not current_status %}btn-outline" style="background-color: #0f172a; color: #ffffff;{% else %}btn-outline{% endif %}">All</a>
+    <a href="?scope={{ current_scope }}&status=EXPIRED" class="btn btn-sm {% if current_status == 'EXPIRED' %}btn-danger{% else %}btn-outline{% endif %}">Expired</a>
+    <a href="?scope={{ current_scope }}&status=EXPIRING_SOON" class="btn btn-sm {% if current_status == 'EXPIRING_SOON' %}btn-warning{% else %}btn-outline{% endif %}">Expiring Soon</a>
+    <a href="?scope={{ current_scope }}&status=SAFE" class="btn btn-sm {% if current_status == 'SAFE' %}btn-success{% else %}btn-outline{% endif %}">Safe</a>
+  </div>
+</div>
+
+<!-- Expiry Surveillance Table -->
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Medicine & Dosage</th>
+          <th>Patient Profile</th>
+          <th>Batch / Lot Number</th>
+          <th>Expiry Date</th>
+          <th>Surveillance Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in batches %}
+        <tr {% if b.status == 'EXPIRED' %}style="background-color: rgba(239, 68, 68, 0.04);"{% elif b.status == 'EXPIRING_SOON' %}style="background-color: rgba(245, 158, 11, 0.04);"{% endif %}>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; {% if b.status == 'EXPIRED' %}background: var(--danger-light); color: var(--danger);{% elif b.status == 'EXPIRING_SOON' %}background: var(--warning-light); color: var(--warning);{% else %}background: var(--primary-light); color: var(--primary);{% endif %}">
+                {% if b.status == 'EXPIRED' %}⚠️{% elif b.status == 'EXPIRING_SOON' %}⏳{% else %}✓{% endif %}
+              </div>
+              <div>
+                <strong><a href="{% url 'medications:medicine_detail' b.medicine.id %}" style="color: var(--text-primary);">{{ b.medicine.name }}</a></strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                  {{ b.medicine.dosage }} • {{ b.medicine.generic_name|truncatechars:35 }}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="badge badge-muted" style="font-size: 0.78rem;">
+              {{ b.medicine.family_member.full_name }}
+            </span>
+          </td>
+          <td>
+            <code style="font-family: var(--font-mono); font-weight: 600; padding: 0.2rem 0.5rem; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-xs);">{{ b.batch_number }}</code>
+          </td>
+          <td>
+            <div style="font-weight: 700; font-family: var(--font-mono);">
+              {{ b.expiry_date|date:"Y-m-d" }}
+            </div>
+          </td>
+          <td>
+            {% if b.days_remaining < 0 %}
+              <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--danger); font-weight: 700; font-size: 0.85rem;">
+                <span class="badge badge-danger">EXPIRED</span>
+                <span>({{ b.days_remaining|stringformat:"+d"|slice:"1:" }} days ago)</span>
+              </div>
+            {% elif b.days_remaining <= 30 %}
+              <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: #b45309; font-weight: 700; font-size: 0.85rem;">
+                <span class="badge badge-warning">EXPIRING SOON</span>
+                <span>({{ b.days_remaining }} days left)</span>
+              </div>
+            {% else %}
+              <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--success); font-weight: 600; font-size: 0.85rem;">
+                <span class="badge badge-success">SAFE</span>
+                <span style="color: var(--text-muted); font-size: 0.8rem;">({{ b.days_remaining }} days left)</span>
+              </div>
+            {% endif %}
+            {% if b.notes %}
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">{{ b.notes }}</div>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'medications:medicine_detail' b.medicine.id %}" class="btn btn-outline btn-sm" title="View Medicine Dossier">
+              View
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
+            <h4 style="color: var(--text-primary); margin-bottom: 0.25rem;">No Expiry Batches Found</h4>
+            <p style="font-size: 0.85rem;">No batch records match the selected patient or filter criteria.</p>
+            {% if current_scope != 'all' %}
+              <a href="?scope=all" class="btn btn-outline btn-sm" style="margin-top: 0.75rem;">View All Family Batches</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

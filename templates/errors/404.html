@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+
+{% block title %}404 - Record Not Found - {{ APP_NAME }}{% endblock %}
+
+{% block body_content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; background-color: var(--bg-main);">
+  <div class="card card-body" style="max-width: 500px; padding: 3rem;">
+    <div style="font-size: 3.5rem; margin-bottom: 1rem;">🔍</div>
+    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">404 - Not Found</h1>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+      The requested medical record, schedule, or page does not exist or may have been removed.
+    </p>
+    <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary">
+      Return to Health Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}

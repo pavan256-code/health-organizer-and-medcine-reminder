@@ -1,0 +1,68 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Log Sleep - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Log Night Sleep</h1>
+    <span class="dashboard-date-badge">Record bedtime, waking hour, sleep quality, and nightly interruptions</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'wellness:sleep_list' %}" class="btn btn-outline btn-sm">← Back to Sleep Journal</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.family_member.id_for_label }}">Patient *</label>
+        {{ form.family_member }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.date.id_for_label }}">Date *</label>
+        {{ form.date }}
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.bedtime.id_for_label }}">Bedtime *</label>
+        {{ form.bedtime }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.wake_time.id_for_label }}">Wake Time *</label>
+        {{ form.wake_time }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.duration_hours.id_for_label }}">Total Hours</label>
+        {{ form.duration_hours }}
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.sleep_quality.id_for_label }}">Sleep Quality *</label>
+        {{ form.sleep_quality }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.interruptions_count.id_for_label }}">Interruptions Count</label>
+        {{ form.interruptions_count }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Dreams / Environmental Notes</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'wellness:sleep_list' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Sleep Entry</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

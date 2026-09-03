@@ -1,0 +1,97 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Record Vitals - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Log Clinical Vitals</h1>
+    <span class="dashboard-date-badge">Enter cardiovascular, metabolic, and biometric readings</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:vital_list' %}" class="btn btn-outline btn-sm">← Back to Vitals</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 700px; margin: 0 auto; padding: 2rem;">
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.family_member.id_for_label }}">Patient *</label>
+        {{ form.family_member }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.date.id_for_label }}">Date *</label>
+        {{ form.date }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.time.id_for_label }}">Time *</label>
+        {{ form.time }}
+      </div>
+    </div>
+
+    <div style="background-color: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; border: 1px solid var(--border-color);">
+      <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem;">❤️ Cardiovascular Measurements</h4>
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.blood_pressure_systolic.id_for_label }}">Systolic BP (mmHg)</label>
+          {{ form.blood_pressure_systolic }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.blood_pressure_diastolic.id_for_label }}">Diastolic BP (mmHg)</label>
+          {{ form.blood_pressure_diastolic }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.heart_rate.id_for_label }}">Heart Rate (BPM)</label>
+          {{ form.heart_rate }}
+        </div>
+      </div>
+    </div>
+
+    <div style="background-color: var(--bg-main); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; border: 1px solid var(--border-color);">
+      <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem;">🩸 Metabolic & Respiratory</h4>
+      <div class="grid-3">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.blood_sugar_fasting.id_for_label }}">Fasting Glucose (mg/dL)</label>
+          {{ form.blood_sugar_fasting }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.blood_sugar_postprandial.id_for_label }}">Postprandial (mg/dL)</label>
+          {{ form.blood_sugar_postprandial }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="{{ form.oxygen_saturation.id_for_label }}">Oxygen SpO2 (%)</label>
+          {{ form.oxygen_saturation }}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="form-group">
+        <label class="form-label" for="{{ form.weight_kg.id_for_label }}">Weight (kg)</label>
+        {{ form.weight_kg }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.height_cm.id_for_label }}">Height (cm)</label>
+        {{ form.height_cm }}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="{{ form.temperature_c.id_for_label }}">Temperature (°C)</label>
+        {{ form.temperature_c }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">Measurement Context / Notes</label>
+      {{ form.notes }}
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+      <a href="{% url 'medical:vital_list' %}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Save Vital Signs</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

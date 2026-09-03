@@ -1,0 +1,76 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Appointments - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Clinical Appointments</h1>
+    <span class="dashboard-date-badge">Consultations, follow-ups, diagnostic scans, and physician visits</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:appointment_add' %}" class="btn btn-primary">➕ Schedule Visit</a>
+    <a href="{% url 'medical:doctor_list' %}" class="btn btn-outline btn-sm">Doctors Directory</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Doctor / Specialty</th>
+          <th>Patient</th>
+          <th>Reason</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td style="font-weight: 600; white-space: nowrap;">
+            {{ appt.date|date:"Y-m-d" }} @ {{ appt.time|time:"H:i" }}
+          </td>
+          <td>
+            <strong>{{ appt.doctor.full_name }}</strong>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ appt.doctor.specialization }}</div>
+          </td>
+          <td>{{ appt.family_member.full_name }}</td>
+          <td>{{ appt.reason }}</td>
+          <td style="font-size: 0.82rem; color: var(--text-secondary);">{{ appt.location|default:"Hospital / Clinic" }}</td>
+          <td>
+            <span class="badge {% if appt.status == 'UPCOMING' %}badge-primary{% elif appt.status == 'COMPLETED' %}badge-success{% elif appt.status == 'CANCELLED' %}badge-danger{% else %}badge-muted{% endif %}">
+              {{ appt.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <div style="display: flex; gap: 0.35rem;">
+              {% if appt.status == 'UPCOMING' %}
+                <form action="{% url 'medical:appointment_complete' appt.id %}" method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success btn-sm" title="Mark as Completed">✓</button>
+                </form>
+                <form action="{% url 'medical:appointment_cancel' appt.id %}" method="post" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline btn-sm" title="Cancel Visit" style="color: var(--danger);">✕</button>
+                </form>
+              {% endif %}
+              <a href="{% url 'medical:appointment_edit' appt.id %}" class="btn btn-outline btn-sm">Edit</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            No medical visits scheduled.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

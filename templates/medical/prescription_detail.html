@@ -1,0 +1,75 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}{{ prescription.title }} - Prescription Details - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>{{ prescription.title }}</h1>
+    <span class="dashboard-date-badge">
+      Patient: {{ prescription.family_member.full_name }} • Date: {{ prescription.prescription_date|date:"F j, Y" }}
+    </span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:prescription_edit' prescription.id %}" class="btn btn-outline btn-sm">Edit Prescription</a>
+    <a href="{% url 'medical:prescription_list' %}" class="btn btn-outline btn-sm">← Back to Prescriptions</a>
+  </div>
+</div>
+
+<div class="grid-2" style="gap: 1.5rem; align-items: start;">
+  <div class="card">
+    <div class="card-header">
+      <span>📋 Assessment & Doctor Orders</span>
+    </div>
+    <div class="card-body">
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.8rem; display: block;">Attending Physician:</span>
+          <strong>{{ prescription.doctor.full_name|default:"Not specified" }}</strong>
+          {% if prescription.doctor.specialization %}
+            <span style="color: var(--text-muted);">({{ prescription.doctor.specialization }})</span>
+          {% endif %}
+        </div>
+
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.8rem; display: block;">Clinical Diagnosis:</span>
+          <p style="margin-top: 0.25rem;">{{ prescription.diagnosis|default:"No formal diagnosis recorded." }}</p>
+        </div>
+
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.8rem; display: block;">Physician Instructions:</span>
+          <p style="margin-top: 0.25rem;">{{ prescription.instructions|default:"None" }}</p>
+        </div>
+
+        {% if prescription.document_file %}
+          <div style="margin-top: 0.5rem; padding: 0.75rem; background-color: var(--primary-light); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <strong>📎 Attached File</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">{{ prescription.document_file.name }}</div>
+            </div>
+            <a href="{{ prescription.document_file.url }}" class="btn btn-primary btn-sm" target="_blank">Download / View</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span>💊 Prescribed Medications</span>
+    </div>
+    <div class="card-body">
+      {% for item in prescription.items.all %}
+        <div style="padding: 0.75rem 0; border-bottom: 1px solid var(--divider);">
+          <strong>{{ item.medicine_name }}</strong> ({{ item.dosage }})
+          <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.2rem;">
+            Frequency: {{ item.frequency }} • Duration: {{ item.duration_days|default:"--" }} days
+          </div>
+        </div>
+      {% empty %}
+        <p style="color: var(--text-muted); font-size: 0.85rem;">No separate itemized medicines linked.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

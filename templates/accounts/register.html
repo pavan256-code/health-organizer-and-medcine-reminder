@@ -1,0 +1,80 @@
+{% extends "base/base_auth.html" %}
+
+{% block title %}Create Account - {{ APP_NAME }}{% endblock %}
+{% block auth_heading %}Create Your Account{% endblock %}
+{% block auth_subheading %}Start organizing your medicines and family health records locally{% endblock %}
+
+{% block auth_content %}
+<form method="post" action="{% url 'accounts:register' %}">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="form-group">
+    <label class="form-label" for="{{ form.username.id_for_label }}">Username *</label>
+    {{ form.username }}
+    {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="{{ form.email.id_for_label }}">Email Address *</label>
+    {{ form.email }}
+    {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+  </div>
+
+  <div class="grid-2">
+    <div class="form-group">
+      <label class="form-label" for="{{ form.first_name.id_for_label }}">First Name</label>
+      {{ form.first_name }}
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="{{ form.last_name.id_for_label }}">Last Name</label>
+      {{ form.last_name }}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="{{ form.phone_number.id_for_label }}">Mobile Number</label>
+    {{ form.phone_number }}
+    {% if form.phone_number.errors %}<div class="form-error">{{ form.phone_number.errors.0 }}</div>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="{{ form.password.id_for_label }}">Password *</label>
+    {{ form.password }}
+    <div class="form-help">Must be at least 8 characters with numbers or letters.</div>
+    {% if form.password.errors %}<div class="form-error">{{ form.password.errors.0 }}</div>{% endif %}
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="{{ form.confirm_password.id_for_label }}">Confirm Password *</label>
+    {{ form.confirm_password }}
+    {% if form.confirm_password.errors %}<div class="form-error">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+  </div>
+
+  <div class="form-group" style="margin-top: 1rem;">
+    <div class="form-check">
+      {{ form.terms_accepted }}
+      <label class="form-label" for="{{ form.terms_accepted.id_for_label }}" style="margin-bottom: 0; cursor: pointer; font-size: 0.85rem;">
+        I acknowledge this is a private, self-contained local health organizer.
+      </label>
+    </div>
+    {% if form.terms_accepted.errors %}<div class="form-error">{{ form.terms_accepted.errors.0 }}</div>{% endif %}
+  </div>
+
+  <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem; margin-top: 1rem;">
+    Complete Registration
+  </button>
+</form>
+
+<div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-secondary);">
+  Already have an account?
+  <a href="{% url 'accounts:login' %}" class="font-semibold">Sign in here</a>
+</div>
+{% endblock %}

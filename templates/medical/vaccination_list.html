@@ -1,0 +1,62 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Vaccinations - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Immunization & Vaccination Records</h1>
+    <span class="dashboard-date-badge">Track childhood, travel, and seasonal vaccinations across all family members</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:vaccination_add' %}" class="btn btn-primary">➕ Record Vaccine</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Vaccine</th>
+          <th>Patient</th>
+          <th>Dose Sequence</th>
+          <th>Administered Date</th>
+          <th>Next Due Date</th>
+          <th>Provider</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vaccinations %}
+        <tr>
+          <td><strong>{{ v.vaccine_name }}</strong></td>
+          <td>{{ v.family_member.full_name }}</td>
+          <td>{{ v.dose_number }}</td>
+          <td>{{ v.vaccination_date|date:"Y-m-d" }}</td>
+          <td>
+            {% if v.next_due_date %}
+              <strong>{{ v.next_due_date|date:"Y-m-d" }}</strong>
+            {% else %}
+              <span style="color: var(--text-muted);">None</span>
+            {% endif %}
+          </td>
+          <td style="font-size: 0.82rem; color: var(--text-secondary);">{{ v.provider|default:"Local Clinic" }}</td>
+          <td>
+            <span class="badge {% if v.status == 'COMPLETED' %}badge-success{% elif v.status == 'UPCOMING' %}badge-primary{% else %}badge-danger{% endif %}">
+              {{ v.get_status_display }}
+            </span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            No vaccination history logged.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

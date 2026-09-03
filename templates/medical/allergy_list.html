@@ -1,0 +1,47 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Allergies & Sensitivities - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Allergy & Sensitivity Directory</h1>
+    <span class="dashboard-date-badge">Critical clinical hypersensitivities to medications, foods, and environmental factors</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medical:allergy_add' %}" class="btn btn-primary">➕ Record Allergy</a>
+  </div>
+</div>
+
+<div class="grid-3" style="gap: 1.5rem;">
+  {% for a in allergies %}
+  <div class="card" style="border-left: 4px solid {% if a.severity == 'CRITICAL' or a.severity == 'SEVERE' %}var(--danger){% elif a.severity == 'MODERATE' %}var(--warning){% else %}var(--info){% endif %};">
+    <div class="card-header">
+      <span class="badge {% if a.severity == 'CRITICAL' %}badge-danger{% elif a.severity == 'SEVERE' %}badge-danger{% elif a.severity == 'MODERATE' %}badge-warning{% else %}badge-info{% endif %}">
+        {{ a.get_severity_display }}
+      </span>
+      <span class="badge badge-muted">{{ a.get_allergy_type_display }}</span>
+    </div>
+    <div class="card-body">
+      <h3 style="font-size: 1.25rem; margin-bottom: 0.25rem;">{{ a.allergen }}</h3>
+      <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        Patient: {{ a.family_member.full_name }}
+      </div>
+      <div style="background-color: var(--bg-main); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem;">
+        <strong>Clinical Reaction:</strong> {{ a.reaction }}
+      </div>
+      {% if a.notes %}
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">{{ a.notes }}</p>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="card card-body" style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);">
+    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🛡️</div>
+    <h2>No known allergies recorded</h2>
+    <p>Document known drug, food, or chemical sensitivities to prevent adverse pharmaceutical interactions.</p>
+    <a href="{% url 'medical:allergy_add' %}" class="btn btn-primary" style="margin-top: 1rem;">+ Add Known Allergy</a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

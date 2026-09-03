@@ -1,0 +1,62 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Administration Logs - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Medication Administration Logs</h1>
+    <span class="dashboard-date-badge">Chronological audit records of taken, skipped, and delayed doses</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'medications:adherence_dashboard' %}" class="btn btn-outline btn-sm">Adherence Analytics</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Actual Time</th>
+          <th>Medicine</th>
+          <th>Patient</th>
+          <th>Status</th>
+          <th>Scheduled Time</th>
+          <th>Reason / Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td style="font-weight: 600; white-space: nowrap;">
+            {{ log.actual_time|date:"Y-m-d H:i" }}
+          </td>
+          <td>
+            <strong>{{ log.medicine.name }}</strong> ({{ log.medicine.dosage }})
+          </td>
+          <td>{{ log.family_member.full_name }}</td>
+          <td>
+            <span class="badge {% if log.status == 'TAKEN' %}badge-success{% elif log.status == 'SKIPPED' %}badge-warning{% else %}badge-danger{% endif %}">
+              {{ log.get_status_display }}
+            </span>
+          </td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">
+            {{ log.scheduled_time|date:"Y-m-d H:i" }}
+          </td>
+          <td style="font-size: 0.82rem; color: var(--text-secondary);">
+            {{ log.reason_for_skip|default:log.notes|default:"-" }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+            No medication administration logs recorded yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

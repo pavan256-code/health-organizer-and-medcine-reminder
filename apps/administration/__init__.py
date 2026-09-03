@@ -1,0 +1,3 @@
+"""
+Administration application package.
+"""

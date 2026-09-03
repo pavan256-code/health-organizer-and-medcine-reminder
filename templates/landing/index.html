@@ -1,0 +1,322 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}?v=5.0">
+{% endblock %}
+
+{% block body_content %}
+<!-- Public Navigation Bar -->
+<header class="landing-nav">
+  <div class="landing-logo">
+    <div class="sidebar-brand-icon" style="width: 36px; height: 36px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        <path d="M12 5v6l2 2"/>
+      </svg>
+    </div>
+    <span>{{ APP_NAME }}</span>
+  </div>
+
+  <ul class="landing-nav-links">
+    <li><a href="{% url 'core:landing' %}" class="landing-nav-link">Home</a></li>
+    <li><a href="{% url 'core:features' %}" class="landing-nav-link">Features</a></li>
+    <li><a href="{% url 'core:about' %}" class="landing-nav-link">About & Privacy</a></li>
+    <li><a href="{% url 'core:contact' %}" class="landing-nav-link">Contact</a></li>
+  </ul>
+
+  <div style="display: flex; align-items: center; gap: 0.85rem;">
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary">Go to Dashboard →</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}" class="btn btn-outline">Sign In</a>
+      <a href="{% url 'accounts:register' %}" class="btn btn-primary">Get Started</a>
+    {% endif %}
+  </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-pill">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+    <span>100% Offline • Zero External APIs • Bank-Grade Local Security</span>
+  </div>
+
+  <h1 class="hero-title">
+    Never Miss a Dose. <br>
+    <span>Master Your Family's Health</span> Locally.
+  </h1>
+
+  <p class="hero-subtitle">
+    Organize medicines, schedules, clinical appointments, vital trends, symptom logs,
+    and prescriptions in one secure, self-contained healthcare organizer.
+  </p>
+
+  <div class="hero-actions">
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary btn-lg">Open Organizer Dashboard →</a>
+    {% else %}
+      <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg">Create Free Local Account</a>
+      <a href="{% url 'accounts:login' %}" class="btn btn-outline btn-lg">Sign In to Existing Account</a>
+    {% endif %}
+  </div>
+
+  <!-- Live Clinical Telemetry Preview -->
+  <div class="hero-preview-container">
+    <div class="hero-preview-card">
+      <div style="border-right: 1px solid var(--border-color); padding-right: 1.25rem;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.35rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Next Scheduled Dose
+        </div>
+        <div style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.4rem;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+          Amoxicillin 500mg
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.65rem;">09:00 AM • After Breakfast</div>
+        <span class="badge badge-success">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          On Track (Taken)
+        </span>
+      </div>
+
+      <div style="border-right: 1px solid var(--border-color); padding-right: 1.25rem;">
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.35rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 11l-2.08-4L4 12"/></svg>
+          Latest Recorded Vitals
+        </div>
+        <div style="font-size: 1.45rem; font-weight: 800; color: var(--text-primary); font-family: var(--font-mono);">120 / 80 <span style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted);">mmHg</span></div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.65rem;">Heart Rate: 72 bpm • Normal</div>
+        <span class="badge badge-primary">Optimal Resting</span>
+      </div>
+
+      <div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.35rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Compliance Metric
+        </div>
+        <div style="font-size: 1.45rem; font-weight: 800; color: var(--success); font-family: var(--font-mono);">96.4%</div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.65rem;">14-Day Consistent Streak</div>
+        <span class="badge badge-warning">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Top Compliance
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Value Proposition Highlights Strip -->
+<div class="highlights-strip">
+  <div class="highlight-item">
+    <span class="highlight-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </span>
+    <div>
+      <div class="highlight-text-title">100% Private & Local</div>
+      <div class="highlight-text-desc">No third-party trackers or cloud data leaks</div>
+    </div>
+  </div>
+  <div class="highlight-item">
+    <span class="highlight-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </span>
+    <div>
+      <div class="highlight-text-title">Smart Reminder Engine</div>
+      <div class="highlight-text-desc">Deterministic dose schedules & snooze alarms</div>
+    </div>
+  </div>
+  <div class="highlight-item">
+    <span class="highlight-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </span>
+    <div>
+      <div class="highlight-text-title">Multi-Family Profiles</div>
+      <div class="highlight-text-desc">Manage children, spouses & elderly parents</div>
+    </div>
+  </div>
+  <div class="highlight-item">
+    <span class="highlight-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </span>
+    <div>
+      <div class="highlight-text-title">Rule-Based Insights</div>
+      <div class="highlight-text-desc">Adherence math & vital variance detection</div>
+    </div>
+  </div>
+</div>
+
+<!-- Features Section -->
+<section class="section-wrap" id="features">
+  <div class="section-header">
+    <span class="section-tag">Comprehensive Capabilities</span>
+    <h2 class="section-title">Built for Real Clinical Care at Home</h2>
+    <p class="section-desc">Every medical, pharmacological, and lifestyle metric tracked with clinical precision.</p>
+  </div>
+
+  <div class="grid-3">
+    <!-- Feature 1 -->
+    <div class="feature-card">
+      <div class="feature-icon-box">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+      </div>
+      <h3 class="feature-card-title">Medication Management</h3>
+      <p class="feature-card-desc">
+        Track tablets, capsules, syrups, and injections with complex dosing schedules,
+        food instructions, stock tracking, and batch expiry alerts.
+      </p>
+    </div>
+
+    <!-- Feature 2 -->
+    <div class="feature-card">
+      <div class="feature-icon-box">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3 class="feature-card-title">Adherence Analytics</h3>
+      <p class="feature-card-desc">
+        Monitor taken, skipped, and delayed doses. Measure medication compliance
+        over 7-day, 30-day, and quarterly intervals.
+      </p>
+    </div>
+
+    <!-- Feature 3 -->
+    <div class="feature-card">
+      <div class="feature-icon-box">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+      </div>
+      <h3 class="feature-card-title">Doctor & Appointments</h3>
+      <p class="feature-card-desc">
+        Store specialist profiles, clinics, and phone contacts. Schedule visits,
+        track reschedule histories, and link prescriptions.
+      </p>
+    </div>
+
+    <!-- Feature 4 -->
+    <div class="feature-card">
+      <div class="feature-icon-box">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 5 9.04 11l-2.08-4L4 12"/></svg>
+      </div>
+      <h3 class="feature-card-title">Vitals & Health Metrics</h3>
+      <p class="feature-card-desc">
+        Record Blood Pressure, Blood Glucose, Heart Rate, BMI, SpO2, and Weight
+        with moving average calculations and trend visuals.
+      </p>
+    </div>
+
+    <!-- Feature 5 -->
+    <div class="feature-card">
+      <div class="feature-icon-box">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+      </div>
+      <h3 class="feature-card-title">Encrypted Document Vault</h3>
+      <p class="feature-card-desc">
+        Store scanned lab results, scan reports, and prescriptions securely
+        with file validation and role-restricted local access.
+      </p>
+    </div>
+
+    <!-- Feature 6 -->
+    <div class="feature-card">
+      <div class="feature-icon-box">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v2H7a5 5 0 0 0-5 5v1h16a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5Z"/><path d="M12 9v13"/></svg>
+      </div>
+      <h3 class="feature-card-title">Lifestyle, Diet & Sleep</h3>
+      <p class="feature-card-desc">
+        Log meals, daily water hydration, step counts, workouts, and sleep
+        durations with automated duration calculators.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="section-wrap" style="background-color: var(--bg-surface); border-radius: var(--radius-xl); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+  <div class="section-header">
+    <span class="section-tag">Step-by-Step Workflow</span>
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-desc">Get your health organization running in under two minutes.</p>
+  </div>
+
+  <div class="grid-4">
+    <div class="step-card">
+      <div class="step-number">1</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 700;">Create Account</h4>
+      <p style="font-size: 0.88rem; color: var(--text-secondary);">Set up your local account and configure family dependents.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">2</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 700;">Add Medicines</h4>
+      <p style="font-size: 0.88rem; color: var(--text-secondary);">Define strengths, instructions, inventory quantities, and frequencies.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">3</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 700;">Receive Reminders</h4>
+      <p style="font-size: 0.88rem; color: var(--text-secondary);">Get timed notifications, mark doses as taken, snooze, or record skips.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-number">4</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 700;">View Analytics</h4>
+      <p style="font-size: 0.88rem; color: var(--text-secondary);">Analyze compliance trends and export reports for your doctor.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Public Footer -->
+<footer class="landing-footer">
+  <div class="footer-inner">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.65rem; color: white; font-weight: 800; font-size: 1.2rem; margin-bottom: 1rem;">
+        <div class="sidebar-brand-icon" style="width: 32px; height: 32px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+        </div>
+        <span>{{ APP_NAME }}</span>
+      </div>
+      <p style="font-size: 0.9rem; color: #94a3b8; line-height: 1.65; max-width: 360px;">
+        An offline-first, local healthcare organizer safeguarding personal medical histories,
+        medication schedules, vital trends, and family profiles.
+      </p>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Navigation</div>
+      <ul class="footer-links">
+        <li><a href="{% url 'core:landing' %}">Home</a></li>
+        <li><a href="{% url 'core:features' %}">Features</a></li>
+        <li><a href="{% url 'core:about' %}">About Us</a></li>
+        <li><a href="{% url 'core:contact' %}">Contact</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Security & Tech</div>
+      <ul class="footer-links">
+        <li><a href="{% url 'core:about' %}">Zero External APIs</a></li>
+        <li><a href="{% url 'core:about' %}">Local SQLite Storage</a></li>
+        <li><a href="{% url 'core:about' %}">PBKDF2 Password Hashing</a></li>
+        <li><a href="{% url 'core:about' %}">Rule-Based Insights</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Account Access</div>
+      <ul class="footer-links">
+        <li><a href="{% url 'accounts:login' %}">Sign In</a></li>
+        <li><a href="{% url 'accounts:register' %}">Register Account</a></li>
+        <li><a href="{% url 'core:health_check' %}">Health Check Endpoint</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div>© {{ CURRENT_YEAR }} {{ APP_ORGANIZATION }}. All rights reserved. Self-contained local application.</div>
+    <div>
+      <span>Medical Disclaimer: Informational tool only. Not a medical diagnostic device.</span>
+    </div>
+  </div>
+</footer>
+{% endblock %}

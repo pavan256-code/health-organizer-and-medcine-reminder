@@ -1,0 +1,76 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Notifications - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Notification Center</h1>
+    <span class="dashboard-date-badge">Medication reminders, stock warnings, and health alerts</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'notifications:mark_all_read' %}" class="btn btn-outline btn-sm">Mark All Read</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
+  <form method="get" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <div>
+      <select name="category" class="form-select" style="min-width: 180px;">
+        <option value="">All Categories</option>
+        {% for cat_val, cat_label in category_choices %}
+          <option value="{{ cat_val }}" {% if cat_val == selected_category %}selected{% endif %}>{{ cat_label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <select name="status" class="form-select" style="min-width: 140px;">
+        <option value="">All Statuses</option>
+        <option value="unread" {% if selected_status == 'unread' %}selected{% endif %}>Unread Only</option>
+        <option value="read" {% if selected_status == 'read' %}selected{% endif %}>Read Only</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    <a href="{% url 'notifications:list' %}" class="btn btn-outline btn-sm">Reset</a>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body" style="padding: 0;">
+    {% for n in notifications %}
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid var(--divider); {% if not n.is_read %}background-color: var(--primary-light);{% endif %}">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span class="badge {% if n.priority == 'URGENT' or n.priority == 'HIGH' %}badge-danger{% elif n.priority == 'MEDIUM' %}badge-warning{% else %}badge-info{% endif %}">
+              {{ n.get_priority_display }}
+            </span>
+            <span class="badge badge-muted">{{ n.get_category_display }}</span>
+            <strong style="font-size: 0.95rem;">{{ n.title }}</strong>
+            {% if not n.is_read %}
+              <span class="badge badge-primary">New</span>
+            {% endif %}
+          </div>
+          <p style="margin-bottom: 0.25rem; font-size: 0.88rem; color: var(--text-secondary);">{{ n.message }}</p>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">
+            {{ n.created_at|date:"Y-m-d H:i" }} • {{ n.created_at|timesince }} ago
+          </span>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          {% if not n.is_read %}
+            <a href="{% url 'notifications:mark_read' n.id %}" class="btn btn-outline btn-sm">Mark Read</a>
+          {% endif %}
+          <form action="{% url 'notifications:delete' n.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline btn-sm" style="color: var(--danger);">✕</button>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+        <p>No notifications matching your criteria.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

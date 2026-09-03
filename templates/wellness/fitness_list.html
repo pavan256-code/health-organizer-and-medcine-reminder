@@ -1,0 +1,54 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Fitness & Exercise - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Fitness & Physical Activity</h1>
+    <span class="dashboard-date-badge">Walking, running, cycling, swimming, and workout logs</span>
+  </div>
+  <div class="quick-actions-bar">
+    <a href="{% url 'wellness:fitness_add' %}" class="btn btn-primary">➕ Log Workout</a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Activity</th>
+          <th>Patient</th>
+          <th>Duration</th>
+          <th>Distance</th>
+          <th>Steps</th>
+          <th>Calories</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in activities %}
+        <tr>
+          <td style="font-weight: 600;">{{ a.date|date:"Y-m-d" }}</td>
+          <td><span class="badge badge-primary">{{ a.get_activity_type_display }}</span></td>
+          <td>{{ a.family_member.full_name }}</td>
+          <td>{{ a.duration_minutes }} mins</td>
+          <td>{% if a.distance_km %}{{ a.distance_km }} km{% else %}--{% endif %}</td>
+          <td>{% if a.steps_count %}{{ a.steps_count }}{% else %}--{% endif %}</td>
+          <td>{% if a.calories_burned %}{{ a.calories_burned }} kcal{% else %}--{% endif %}</td>
+          <td style="font-size: 0.8rem; color: var(--text-secondary);">{{ a.notes|default:"-" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+            No workouts logged yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

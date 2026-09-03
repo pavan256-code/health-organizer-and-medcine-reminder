@@ -1,0 +1,58 @@
+{% extends "base/base_auth.html" %}
+
+{% block title %}Sign In - {{ APP_NAME }}{% endblock %}
+{% block auth_heading %}Welcome Back{% endblock %}
+{% block auth_subheading %}Sign in to access your medicine schedules and health logs{% endblock %}
+
+{% block auth_content %}
+<form method="post" action="{% url 'accounts:login' %}">
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger" style="margin-bottom: 1.25rem;">
+      {% for error in form.non_field_errors %}
+        <div>{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="form-group">
+    <label class="form-label" for="{{ form.username_or_email.id_for_label }}">Username or Email</label>
+    {{ form.username_or_email }}
+    {% if form.username_or_email.errors %}
+      <div class="form-error">{{ form.username_or_email.errors.0 }}</div>
+    {% endif %}
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+    {{ form.password }}
+    {% if form.password.errors %}
+      <div class="form-error">{{ form.password.errors.0 }}</div>
+    {% endif %}
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+    <div class="form-check">
+      {{ form.remember_me }}
+      <label class="form-label" for="{{ form.remember_me.id_for_label }}" style="margin-bottom: 0; cursor: pointer; font-size: 0.85rem;">
+        Remember this device
+      </label>
+    </div>
+    <span style="font-size: 0.82rem; color: var(--text-muted);">Self-Hosted Local</span>
+  </div>
+
+  <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem;">
+    Sign In to Organizer
+  </button>
+</form>
+
+<div style="text-align: center; margin-top: 1.5rem; font-size: 0.88rem; color: var(--text-secondary);">
+  Don't have an account?
+  <a href="{% url 'accounts:register' %}" class="font-semibold">Create one now</a>
+</div>
+
+<div style="text-align: center; margin-top: 1rem;">
+  <a href="{% url 'core:landing' %}" style="font-size: 0.82rem; color: var(--text-muted);">← Return to Homepage</a>
+</div>
+{% endblock %}

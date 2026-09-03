@@ -1,0 +1,65 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Health Calendar - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Unified Health Calendar</h1>
+    <span class="dashboard-date-badge">{{ current_month_name }} {{ current_year }}</span>
+  </div>
+  <div class="quick-actions-bar">
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline btn-sm">◀ Previous</a>
+      <a href="{% url 'calendar_app:unified_calendar' %}" class="btn btn-outline btn-sm">Today</a>
+      <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline btn-sm">Next ▶</a>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="padding: 1rem;">
+  <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 700; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem;">
+    <div>Mon</div>
+    <div>Tue</div>
+    <div>Wed</div>
+    <div>Thu</div>
+    <div>Fri</div>
+    <div>Sat</div>
+    <div>Sun</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column;">
+    {% for week in calendar_grid %}
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); min-height: 110px; border-bottom: 1px solid var(--divider);">
+        {% for day in week %}
+          <div style="padding: 0.5rem; border-right: 1px solid var(--divider); background-color: {% if not day.is_current_month %}var(--bg-main){% elif day.is_today %}var(--primary-light){% else %}transparent{% endif %}; opacity: {% if not day.is_current_month %}0.5{% else %}1{% endif %}; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span style="font-size: 0.85rem; font-weight: {% if day.is_today %}800{% else %}600{% endif %}; {% if day.is_today %}color: var(--primary);{% endif %}">
+                {{ day.date.day }}
+              </span>
+              {% if day.is_today %}
+                <span class="badge badge-primary" style="font-size: 0.65rem; padding: 0.15rem 0.35rem;">TODAY</span>
+              {% endif %}
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.25rem; overflow-y: auto; max-height: 90px;">
+              {% for ev in day.events %}
+                <div style="font-size: 0.72rem; padding: 0.2rem 0.35rem; border-radius: var(--radius-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background-color: {% if ev.color == 'primary' %}var(--primary-light){% elif ev.color == 'success' %}var(--success-light){% elif ev.color == 'warning' %}var(--warning-light){% elif ev.color == 'info' %}var(--info-light){% else %}var(--danger-light){% endif %}; color: var(--text-main);">
+                  {{ ev.title }} ({{ ev.patient }})
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div style="margin-top: 1rem; display: flex; gap: 1.5rem; font-size: 0.82rem; color: var(--text-secondary); align-items: center;">
+  <strong>Legend:</strong>
+  <span style="display: flex; align-items: center; gap: 0.35rem;"><span style="display:inline-block; width: 12px; height: 12px; border-radius: 2px; background: var(--primary);"></span> Medication Dose</span>
+  <span style="display: flex; align-items: center; gap: 0.35rem;"><span style="display:inline-block; width: 12px; height: 12px; border-radius: 2px; background: var(--warning);"></span> Doctor Appointment</span>
+  <span style="display: flex; align-items: center; gap: 0.35rem;"><span style="display:inline-block; width: 12px; height: 12px; border-radius: 2px; background: var(--info);"></span> Vaccination Due</span>
+</div>
+{% endblock %}

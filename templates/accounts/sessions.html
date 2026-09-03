@@ -1,0 +1,77 @@
+{% extends "base/base_dashboard.html" %}
+
+{% block title %}Active Device Sessions - {{ APP_NAME }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header-bar">
+  <div class="dashboard-greeting">
+    <h1>Active Device Sessions</h1>
+    <span class="dashboard-date-badge">Inspect and revoke active browser sessions across your local devices</span>
+  </div>
+  <div class="quick-actions-bar">
+    <form action="{% url 'accounts:logout_all_sessions' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Terminate all other active sessions?');">
+        🚪 Revoke All Other Sessions
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Device / Browser</th>
+          <th>IP Address</th>
+          <th>Last Activity</th>
+          <th>Session Key</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in user_sessions %}
+        <tr>
+          <td style="font-weight: 600;">
+            <span>💻 {{ s.device_type }}</span>
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">
+              {{ s.user_agent|truncatechars:50 }}
+            </div>
+          </td>
+          <td><code>{{ s.ip_address }}</code></td>
+          <td>{{ s.last_activity|timesince }} ago</td>
+          <td><code>{{ s.session_key|slice:":12" }}...</code></td>
+          <td>
+            {% if s.session_key == current_session_key %}
+              <span class="badge badge-success">Current Session</span>
+            {% else %}
+              <span class="badge badge-primary">Active</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if s.session_key != current_session_key %}
+            <form action="{% url 'accounts:terminate_session' s.id %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline btn-sm" style="color: var(--danger);">
+                Terminate
+              </button>
+            </form>
+            {% else %}
+              <span style="font-size: 0.8rem; color: var(--text-muted);">In Use</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+            No active sessions recorded.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

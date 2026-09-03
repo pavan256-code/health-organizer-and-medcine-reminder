@@ -1,0 +1,3 @@
+"""
+Wellness application package.
+"""
