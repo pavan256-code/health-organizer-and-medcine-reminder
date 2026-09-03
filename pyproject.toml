@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "health-organizer-and-medicine-reminder"
+version = "2.0.0"
+description = "Hospital Management, Clinical Decision Support & Family Medicine Reminder Suite"
+authors = ["pavan256-code <pavan256-code@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "apps"}, {include = "config"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.1"
+pillow = "^10.4.0"
+reportlab = "^4.2.2"
+asgiref = "^3.8.1"
+gunicorn = "^23.0.0"
+whitenoise = "^6.7.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+pytest-django = "^4.8.0"
+pytest-cov = "^5.0.0"
+coverage = "^7.6.1"
+black = "^24.8.0"
+flake8 = "^7.1.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["tests", "apps"]
+addopts = "--nomigrations --cov=. --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["apps", "config"]
+omit = ["*/migrations/*", "*/tests/*", "tests/*", "manage.py", "main.py", "app.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+]

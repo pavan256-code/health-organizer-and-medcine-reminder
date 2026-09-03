@@ -1,0 +1,25 @@
+{
+  "name": "health-organizer-and-medicine-reminder",
+  "version": "2.0.0",
+  "description": "Hospital Management, Clinical Decision Support & Family Medicine Reminder Suite",
+  "main": "main.py",
+  "scripts": {
+    "start": "python manage.py runserver 0.0.0.0:8000",
+    "dev": "python manage.py runserver",
+    "build": "python manage.py collectstatic --noinput",
+    "test": "python manage.py test",
+    "lint": "flake8 apps config"
+  },
+  "keywords": [
+    "healthcare",
+    "hospital-management",
+    "medicine-reminder",
+    "clinical-decision-support",
+    "django",
+    "telemetry"
+  ],
+  "author": "pavan256-code",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

@@ -1,0 +1,42 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "8d3e91f0a1c2b3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.11"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "asgiref": {
+            "hashes": [],
+            "version": "==3.8.1"
+        },
+        "django": {
+            "hashes": [],
+            "version": "==5.1.1"
+        },
+        "pillow": {
+            "hashes": [],
+            "version": "==10.4.0"
+        },
+        "reportlab": {
+            "hashes": [],
+            "version": "==4.2.2"
+        }
+    },
+    "develop": {
+        "pytest": {
+            "hashes": [],
+            "version": "==8.3.2"
+        }
+    }
+}
