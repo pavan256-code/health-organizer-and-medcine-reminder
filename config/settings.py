@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.backups.apps.BackupsConfig',
     'apps.administration.apps.AdministrationConfig',
     'apps.emergency.apps.EmergencyConfig',
+    'apps.clinical.apps.ClinicalConfig',
 ]
 
 MIDDLEWARE = [
